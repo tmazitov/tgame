@@ -23,7 +23,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/images"
 	"github.com/tmazitov/tgame.git/internal/ground"
-	"github.com/tmazitov/tgame.git/internal/player"
 	gm_layer "github.com/tmazitov/tgame.git/pkg/gm_layer"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
 	gm_obj "github.com/tmazitov/tgame.git/pkg/gm_obj"
@@ -68,11 +67,5 @@ func main() {
 			Image: gameImage,
 		},
 	))
-
-	var player *player.Player = player.NewPlayer(0, 0, "../assets/textures/player.png")
-	if player == nil {
-		log.Fatal("Player is nil")
-	}
-	game.AddEntity(player)
 	game.Run()
 }

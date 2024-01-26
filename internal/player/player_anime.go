@@ -32,3 +32,10 @@ func NewPlayerAnime(image *gm_layer.Image) *PlayerAnime {
 		Idle: MakeIdleAnime(image),
 	}
 }
+
+func (pa *PlayerAnime) GetCurrentAnime(action PlayerAction) *gm_anime.Anime {
+	if action == Idle_PlayerAction {
+		return pa.Idle
+	}
+	return (nil)
+}
