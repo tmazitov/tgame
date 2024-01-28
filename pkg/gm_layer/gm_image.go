@@ -12,6 +12,9 @@ type Image struct {
 }
 
 func NewImage(inst *ebiten.Image) *Image {
+	if inst == nil {
+		return nil
+	}
 	return &Image{
 		Inst:       inst,
 		TileXCount: inst.Bounds().Dx() / stgs.TileSize,

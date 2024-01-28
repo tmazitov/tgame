@@ -18,6 +18,8 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 
 	var pressedKeyFound bool = false
 
+	// TODO : bitmap to handle case then user press D and A
+
 	for _, key := range keys {
 		if key == ebiten.KeyW {
 			p.moveTop()
@@ -37,7 +39,8 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 		}
 	}
 
-	if !pressedKeyFound {
+	if !pressedKeyFound && p.actionState != Idle_PlayerAction {
+		p.lastAction = p.actionState
 		p.actionState = Idle_PlayerAction
 	}
 }
@@ -45,24 +48,28 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 func (p *Player) moveLeft() {
 	p.X -= p.Speed
 	if p.actionState != Left_PlayerAction {
+		p.lastAction = p.actionState
 		p.actionState = Left_PlayerAction
 	}
 }
 func (p *Player) moveRight() {
 	p.X += p.Speed
-	if p.actionState != Left_PlayerAction {
+	if p.actionState != Right_PlayerAction {
+		p.lastAction = p.actionState
 		p.actionState = Right_PlayerAction
 	}
 }
 func (p *Player) moveTop() {
 	p.Y -= p.Speed
-	if p.actionState != Left_PlayerAction {
+	if p.actionState != Top_PlayerAction {
+		p.lastAction = p.actionState
 		p.actionState = Top_PlayerAction
 	}
 }
 func (p *Player) moveBot() {
 	p.Y += p.Speed
-	if p.actionState != Left_PlayerAction {
+	if p.actionState != Bot_PlayerAction {
+		p.lastAction = p.actionState
 		p.actionState = Bot_PlayerAction
 	}
 }
