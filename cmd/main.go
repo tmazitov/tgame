@@ -38,6 +38,9 @@ func main() {
 	tilesImage = ebiten.NewImageFromImage(img)
 	gameImage := gm_layer.NewImage(tilesImage)
 	game := gm_machine.NewGameMachine("Title")
+	if game == nil {
+		panic("Game is nil!")
+	}
 	game.AddLayer(gm_layer.NewLayer("Layer 1", ground.GroundRaw(243), gameImage))
 	game.AddObj(gm_obj.NewGameObj(
 		"Test building",
