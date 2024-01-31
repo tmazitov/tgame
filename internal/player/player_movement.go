@@ -21,8 +21,6 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 		pressedKeyArray []bool = []bool{false, false, false, false}
 	)
 
-	// TODO : bitmap to handle case then user press D and A
-
 	for _, key := range keys {
 		if key == ebiten.KeyW {
 			pressedKeyArray[0] = true
@@ -69,6 +67,8 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 		p.lastAction = p.actionState
 		p.actionState = Idle_PlayerAction
 	}
+
+	p.attack.Handle(keys)
 }
 
 func (p *Player) moveLeft() {

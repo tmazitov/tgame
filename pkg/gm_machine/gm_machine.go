@@ -30,7 +30,7 @@ func NewGameMachine(title string) *GameMachine {
 
 	return &GameMachine{
 		title:    title,
-		layers:   []*gm_layer.Layer{},
+		layers:   nil,
 		sprites:  []int{},
 		objs:     []*gm_obj.GameObj{},
 		entities: []gm_entity.GameEntity{player},
@@ -46,14 +46,23 @@ func (g *GameMachine) Update() error {
 }
 
 func (g *GameMachine) AddLayer(layer *gm_layer.Layer) {
+	if layer == nil {
+		return
+	}
 	g.layers = append(g.layers, layer)
 }
 
 func (g *GameMachine) AddObj(obj *gm_obj.GameObj) {
+	if obj == nil {
+		return
+	}
 	g.objs = append(g.objs, obj)
 }
 
 func (g *GameMachine) AddEntity(entity gm_entity.GameEntity) {
+	if entity == nil {
+		return
+	}
 	g.entities = append(g.entities, entity)
 }
 

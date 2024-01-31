@@ -1,13 +1,11 @@
 package player
 
 import (
-	"fmt"
 	"image"
 	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
@@ -21,6 +19,7 @@ type Player struct {
 	image       *gm_layer.Image
 	lastAction  PlayerAction
 	actionState PlayerAction
+	attack      *PlayerAttackSystem
 }
 
 func NewPlayer(x, y int, tilesImagePath string) *Player {
@@ -31,6 +30,7 @@ func NewPlayer(x, y int, tilesImagePath string) *Player {
 		img         image.Image
 		playerImg   *gm_layer.Image
 		playerAnime *PlayerAnime
+		pl          *Player
 	)
 
 	if file, err = os.Open(tilesImagePath); err != nil {
@@ -50,18 +50,25 @@ func NewPlayer(x, y int, tilesImagePath string) *Player {
 		return nil
 	}
 
-	if stgs.IsDebug {
-		log.Println("Player create\t\tsuccess")
-	}
-
-	return &Player{
+	pl = &Player{
 		X:           x,
 		Y:           y,
 		Speed:       stgs.PlayerSpeed,
 		image:       playerImg,
 		anime:       playerAnime,
 		actionState: Idle_PlayerAction,
+		attack:      nil,
 	}
+
+	pl.attack = NewPlayerAttackSystem(&pl.X, &pl.Y, &pl.lastAction)
+	if pl.attack == nil {
+		return nil
+	}
+	if stgs.IsDebug {
+		log.Println("Player create\t\tsuccess")
+	}
+
+	return pl
 }
 
 func (p *Player) GetNextTile() *ebiten.Image {
@@ -90,5 +97,9 @@ func (p *Player) Draw(screen *ebiten.Image) {
 		tile = FlipVertical(tile)
 	}
 	screen.DrawImage(tile, op)
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player coords: %d %d", p.lastAction, p.actionState))
+
+	for _, fireball := range p.attack.GetFireballs() {
+		fireball.Move()
+		fireball.Draw(screen)
+	}
 }
