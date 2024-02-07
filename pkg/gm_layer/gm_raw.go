@@ -2,6 +2,7 @@ package gm_layer
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -16,14 +17,15 @@ type Raw struct {
 func NewRaw(tilePath string) (*Raw, error) {
 
 	var (
-		file    *os.File
-		scanner *bufio.Scanner
-		digit   int
-		line    string
-		err     error
-		width   int = 0
-		height  int = 0
-		raw     []int
+		file      *os.File
+		scanner   *bufio.Scanner
+		digit     int
+		line      string
+		err       error
+		lineWidth int
+		width     int = 0
+		height    int = 0
+		raw       []int
 	)
 
 	file, err = os.Open(tilePath)
@@ -36,20 +38,25 @@ func NewRaw(tilePath string) (*Raw, error) {
 	scanner = bufio.NewScanner(file)
 	for scanner.Scan() {
 		line = scanner.Text()
+		lineWidth = 0
+		fmt.Printf("line: %s\n", line)
 		if len(line) == 0 {
 			return nil, ErrMapParsingEmptyLine
 		}
-		if width != 0 && len(line) != width {
-			return nil, ErrMapParsingDifferentLine
-		}
-		for _, char := range strings.Split(line, " ") {
-			digit, err = strconv.Atoi(string(char))
+		for _, tile := range strings.Split(line, " ") {
+			digit, err = strconv.Atoi(tile)
 			if err != nil {
 				return nil, err
 			}
+			lineWidth++
 			raw = append(raw, digit)
 		}
-		width = len(line)
+		fmt.Printf("width: %d, len(line): %d\n", width, lineWidth)
+
+		if width != 0 && width != lineWidth {
+			return nil, ErrMapParsingDifferentLine
+		}
+		width = lineWidth
 		height++
 	}
 

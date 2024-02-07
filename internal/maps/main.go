@@ -15,8 +15,11 @@ func MainMap() (*gm_map.Map, error) {
 		groundRawPath   string = "../maps/map1/ground_1"
 		grassImagePath  string = "../assets/textures/tilesets/decor_16x16.png"
 		grassRawPath    string = "../maps/map1/ground_2"
+		roadsImagePath  string = "../assets/textures/tilesets/plains.png"
+		roadsRawPath    string = "../maps/map1/ground_3"
 		m               *gm_map.Map
 		grass           *gm_layer.Layer
+		roads           *gm_layer.Layer
 		err             error
 	)
 
@@ -30,8 +33,12 @@ func MainMap() (*gm_map.Map, error) {
 	if grass, err = gm_layer.NewLayer("grass", grassRawPath, grassImagePath); err != nil {
 		return nil, err
 	}
+	if roads, err = gm_layer.NewLayer("roads", roadsRawPath, roadsImagePath); err != nil {
+		return nil, err
+	}
 
 	m.AddLayer(gm_map.MapGroundLevel, grass)
+	m.AddLayer(gm_map.MapGroundLevel, roads)
 
 	if stgs.IsDebug {
 		log.Println("MainMap create\t\tsuccess")
