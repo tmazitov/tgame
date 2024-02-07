@@ -11,14 +11,14 @@ import (
 
 type PlayerAttackSystem struct {
 	fireballImages []*ebiten.Image
-	playerX        *int
-	playerY        *int
+	playerX        *float32
+	playerY        *float32
 	playerLastMove *PlayerAction
 	fireballs      []*PlayerFireball
 	block          bool
 }
 
-func NewPlayerAttackSystem(playerX *int, playerY *int, playerLastMove *PlayerAction) *PlayerAttackSystem {
+func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *PlayerAction) *PlayerAttackSystem {
 	var (
 		file        *os.File
 		err         error

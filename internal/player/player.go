@@ -12,9 +12,9 @@ import (
 )
 
 type Player struct {
-	X           int
-	Y           int
-	Speed       int
+	X           float32
+	Y           float32
+	Speed       float32
 	anime       *PlayerAnime
 	image       *gm_layer.Image
 	lastAction  PlayerAction
@@ -22,7 +22,7 @@ type Player struct {
 	attack      *PlayerAttackSystem
 }
 
-func NewPlayer(x, y int, tilesImagePath string) *Player {
+func NewPlayer(x, y float32, tilesImagePath string) *Player {
 
 	var (
 		file        *os.File

@@ -1,6 +1,6 @@
 package gm_geometry
 
 type Point struct {
-	X int
-	Y int
+	X float32
+	Y float32
 }

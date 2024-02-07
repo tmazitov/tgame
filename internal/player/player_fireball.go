@@ -10,8 +10,8 @@ import (
 
 type FireballRemoveCallback func(*PlayerFireball)
 type PlayerFireball struct {
-	X              int
-	Y              int
+	X              float32
+	Y              float32
 	tileCounter    int
 	tileIterator   int
 	dest           *gm_geometry.Point
@@ -19,7 +19,7 @@ type PlayerFireball struct {
 	removeCallback FireballRemoveCallback
 }
 
-func NewPlayerFireball(x, y int, dest *gm_geometry.Point, images []*ebiten.Image, removeCallback FireballRemoveCallback) *PlayerFireball {
+func NewPlayerFireball(x, y float32, dest *gm_geometry.Point, images []*ebiten.Image, removeCallback FireballRemoveCallback) *PlayerFireball {
 
 	var fireball *PlayerFireball = &PlayerFireball{
 		X:              x,
@@ -53,6 +53,6 @@ func (pf *PlayerFireball) Draw(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(float64(pf.X), float64(pf.Y))
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Fireball: %d %d\n", pf.X, pf.Y))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Fireball: %f %f\n", pf.X, pf.Y))
 	screen.DrawImage(pf.images[pf.tileCounter], op)
 }
