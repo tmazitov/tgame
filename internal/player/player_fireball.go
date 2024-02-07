@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
+	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
 type FireballRemoveCallback func(*PlayerFireball)
@@ -35,8 +36,8 @@ func NewPlayerFireball(x, y float32, dest *gm_geometry.Point, images []*ebiten.I
 }
 
 func (pf *PlayerFireball) Move() {
-	pf.X++
-	if pf.X == pf.dest.X {
+	pf.X += stgs.FireballSpeed
+	if pf.X > pf.dest.X {
 		pf.removeCallback(pf)
 	}
 }

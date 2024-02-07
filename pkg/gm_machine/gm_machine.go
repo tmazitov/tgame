@@ -44,6 +44,7 @@ func NewGameMachine(title string) *GameMachine {
 func (g *GameMachine) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 	g.player.MovementHandler(g.keys)
+	g.player.AttackHandler(g.keys)
 	return nil
 }
 

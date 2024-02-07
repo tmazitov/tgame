@@ -18,6 +18,10 @@ type PlayerAttackSystem struct {
 	block          bool
 }
 
+func (p *Player) AttackHandler(keys []ebiten.Key) {
+	p.attack.Handle(keys)
+}
+
 func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *PlayerAction) *PlayerAttackSystem {
 	var (
 		file        *os.File

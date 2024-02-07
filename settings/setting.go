@@ -14,3 +14,7 @@ const TileYCount = ScreenHeight / TileSize
 
 const PlayerSpeed = 1
 const PlayerSize = 32
+
+// PROJECTILE SETTINGS
+
+const FireballSpeed = 2.5
