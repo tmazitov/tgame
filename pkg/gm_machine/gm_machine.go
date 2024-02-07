@@ -22,7 +22,7 @@ type GameMachine struct {
 
 func NewGameMachine(title string) *GameMachine {
 
-	var player *player.Player = player.NewPlayer(0, 0, "../assets/textures/player.png")
+	var player *player.Player = player.NewPlayer(0, 0, "../assets/textures/characters/Humans_Smith.png")
 
 	if player == nil {
 		return nil
@@ -83,7 +83,7 @@ func (g *GameMachine) Draw(screen *ebiten.Image) {
 }
 
 func (g *GameMachine) Run() error {
-	ebiten.SetWindowSize(stgs.ScreenWidth*3, stgs.ScreenHeight*3)
+	ebiten.SetWindowSize(stgs.ScreenWidth*4, stgs.ScreenHeight*4)
 	ebiten.SetWindowTitle("Tiles (Ebitengine Demo)")
 	return ebiten.RunGame(g)
 }
