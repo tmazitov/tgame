@@ -71,10 +71,13 @@ func GetTranslateByTile(index int) (float64, float64) {
 
 func (l *Layer) Draw(screen *ebiten.Image) {
 	for i, tile := range l.GetValue() {
+		if tile == 0 {
+			continue
+		}
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(GetTranslateByTile(i))
 
-		sx, sy := GetCoordsByTile(l.image, tile)
+		sx, sy := GetCoordsByTile(l.image, tile-1)
 		// fmt.Printf("draw %s : %d %d : %d %d\n", l.name, sx, sy, i, tile)
 		screen.DrawImage(l.image.Inst.SubImage(image.Rect(sx, sy, sx+stgs.TileSize, sy+stgs.TileSize)).(*ebiten.Image), op)
 	}
