@@ -3,70 +3,55 @@ package gm_machine
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/tmazitov/tgame.git/internal/player"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
-	gm_obj "github.com/tmazitov/tgame.git/pkg/gm_obj"
+	"github.com/tmazitov/tgame.git/pkg/gm_map"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
 type GameMachine struct {
-	title    string
-	layers   []ILayer
-	sprites  []int
-	objs     []*gm_obj.GameObj
-	keys     []ebiten.Key
-	entities []gm_entity.GameEntity
-	player   *player.Player
+	title      string
+	currentMap int
+	maps       []*gm_map.Map
+	sprites    []int
+	keys       []ebiten.Key
+	player     gm_entity.Player
 }
 
 func NewGameMachine(title string) *GameMachine {
-
-	var player *player.Player = player.NewPlayer(0, 0, player.PlayerImagesPaths{
-		Tiles:  "../assets/textures/characters/Humans_Smith.png",
-		Shadow: "../assets/textures/characters/shadow.png",
-	})
-
-	if player == nil {
-		return nil
-	}
-
 	return &GameMachine{
-		title:    title,
-		layers:   []ILayer{},
-		sprites:  []int{},
-		objs:     []*gm_obj.GameObj{},
-		entities: []gm_entity.GameEntity{player},
-		player:   player,
-		keys:     []ebiten.Key{},
+		title:      title,
+		maps:       []*gm_map.Map{},
+		currentMap: 0,
+		sprites:    []int{},
+		player:     nil,
+		keys:       []ebiten.Key{},
 	}
 }
 
 func (g *GameMachine) Update() error {
+	if g.player == nil {
+		return nil
+	}
+
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 	g.player.MovementHandler(g.keys)
 	g.player.AttackHandler(g.keys)
 	return nil
 }
 
-func (g *GameMachine) AddLayer(layer ILayer) {
-	if layer == nil {
+func (g *GameMachine) AddPlayer(player gm_entity.Player) {
+	if player == nil {
 		return
 	}
-	g.layers = append(g.layers, layer)
+	g.player = player
 }
 
-func (g *GameMachine) AddObj(obj *gm_obj.GameObj) {
-	if obj == nil {
+func (g *GameMachine) AddMap(m *gm_map.Map) {
+	if m == nil {
 		return
 	}
-	g.objs = append(g.objs, obj)
-}
-
-func (g *GameMachine) AddEntity(entity gm_entity.GameEntity) {
-	if entity == nil {
-		return
-	}
-	g.entities = append(g.entities, entity)
+	g.maps = append(g.maps, m)
+	m.AddPlayer(g.player)
 }
 
 func (g *GameMachine) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -74,19 +59,11 @@ func (g *GameMachine) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *GameMachine) Draw(screen *ebiten.Image) {
-	for _, layer := range g.layers {
-		layer.Draw(screen)
-	}
-	for _, obj := range g.objs {
-		obj.Draw(screen)
-	}
-	for _, entity := range g.entities {
-		entity.Draw(screen)
-	}
+	g.maps[g.currentMap].Draw(screen)
 }
 
 func (g *GameMachine) Run() error {
-	ebiten.SetWindowSize(stgs.ScreenWidth*4, stgs.ScreenHeight*4)
+	ebiten.SetWindowSize(stgs.ScreenWidth*3, stgs.ScreenHeight*3)
 	ebiten.SetWindowTitle("Tiles (Ebitengine Demo)")
 	return ebiten.RunGame(g)
 }

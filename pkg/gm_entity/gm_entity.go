@@ -5,3 +5,10 @@ import "github.com/hajimehoshi/ebiten/v2"
 type GameEntity interface {
 	Draw(screen *ebiten.Image)
 }
+
+type Player interface {
+	GameEntity
+	Draw(screen *ebiten.Image)
+	AttackHandler(keys []ebiten.Key)
+	MovementHandler(keys []ebiten.Key)
+}

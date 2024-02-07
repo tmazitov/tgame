@@ -22,7 +22,7 @@ func (p *Player) AttackHandler(keys []ebiten.Key) {
 	p.attack.Handle(keys)
 }
 
-func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *PlayerAction) *PlayerAttackSystem {
+func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *PlayerAction) (*PlayerAttackSystem, error) {
 	var (
 		file        *os.File
 		err         error
@@ -40,17 +40,16 @@ func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *P
 
 	for _, path := range imagesPaths {
 		if file, err = os.Open(path); err != nil {
-			return nil
+			return nil, err
 		}
 
 		img, _, err = image.Decode(file)
 		file.Close()
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		images = append(images, ebiten.NewImageFromImage(img))
 		fmt.Printf("image %s\t\tdone\n", path)
-
 	}
 
 	pas = &PlayerAttackSystem{
@@ -62,7 +61,7 @@ func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *P
 		block:          false,
 	}
 
-	return pas
+	return pas, nil
 }
 
 func (pas *PlayerAttackSystem) Handle(keys []ebiten.Key) {

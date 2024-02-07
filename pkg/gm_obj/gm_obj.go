@@ -25,7 +25,7 @@ type GameObj struct {
 	layer  *gm_layer.Layer
 }
 
-func NewGameObj(name string, opt GameObjOptions) *GameObj {
+func NewGameObj(name string, opt GameObjOptions) (*GameObj, error) {
 	var obj *GameObj = &GameObj{
 		X:      opt.X,
 		Y:      opt.Y,
@@ -36,24 +36,26 @@ func NewGameObj(name string, opt GameObjOptions) *GameObj {
 		layer:  nil,
 	}
 
-	obj.makeLayer(opt.ImagePath)
-
-	return obj
+	if err := obj.makeLayer(opt.ImagePath); err != nil {
+		return nil, err
+	}
+	return obj, nil
 }
 
 func (g *GameObj) Draw(screen *ebiten.Image) {
 	g.layer.Draw(screen)
 }
 
-func (g *GameObj) makeLayer(imagePath string) {
+func (g *GameObj) makeLayer(imagePath string) error {
 	var (
-		layer []int = []int{}
+		tiles []int = []int{}
+		err   error
 	)
 
 	// Fill top border
 	for h := 0; h < g.Y; h++ {
 		for w := 0; w < stgs.TileXCount; w++ {
-			layer = append(layer, 0)
+			tiles = append(tiles, 0)
 		}
 	}
 
@@ -62,20 +64,25 @@ func (g *GameObj) makeLayer(imagePath string) {
 	for h := 0; h < g.Height; h++ {
 		// Fill left border
 		for w := 0; w < g.X; w++ {
-			layer = append(layer, 0)
+			tiles = append(tiles, 0)
 		}
 
 		// Fill content
 		for w := g.X; w <= g.Width; w++ {
-			layer = append(layer, g.raw[tileCounter])
+			tiles = append(tiles, g.raw[tileCounter])
 			tileCounter++
 		}
 
 		// Fill right border
 		for w := g.X + g.Width; w < stgs.TileXCount; w++ {
-			layer = append(layer, 0)
+			tiles = append(tiles, 0)
 		}
 	}
 
-	g.layer = gm_layer.NewLayer(g.Name, layer, imagePath)
+	g.layer, err = gm_layer.NewLayerByRaw(
+		g.Name,
+		gm_layer.NewRawByTiles(tiles, g.Width, g.Height),
+		imagePath,
+	)
+	return err
 }

@@ -30,7 +30,7 @@ type Player struct {
 	attack      *PlayerAttackSystem
 }
 
-func NewPlayer(x, y float32, imagesPaths PlayerImagesPaths) *Player {
+func NewPlayer(x, y float32, imagesPaths PlayerImagesPaths) (*Player, error) {
 
 	var (
 		err         error
@@ -49,27 +49,26 @@ func NewPlayer(x, y float32, imagesPaths PlayerImagesPaths) *Player {
 	}
 
 	if pl.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles); err != nil {
-		return nil
+		return nil, err
 	}
 
 	if pl.images.Shadow, err = gm_layer.NewImageByPath(imagesPaths.Shadow); err != nil {
-		return nil
+		return nil, err
 	}
 
 	if pl.anime = NewPlayerAnime(pl.images.Tiles); err != nil {
-		return nil
+		return nil, err
 	}
 
-	pl.attack = NewPlayerAttackSystem(&pl.X, &pl.Y, &pl.lastAction)
-	if pl.attack == nil {
-		return nil
+	if pl.attack, err = NewPlayerAttackSystem(&pl.X, &pl.Y, &pl.lastAction); pl.attack == nil {
+		return nil, err
 	}
 
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
 	}
 
-	return pl
+	return pl, nil
 }
 
 func (p *Player) GetNextTile() *ebiten.Image {

@@ -17,26 +17,38 @@ package main
 import (
 	_ "image/png"
 
-	"github.com/tmazitov/tgame.git/internal/ground"
-	"github.com/tmazitov/tgame.git/pkg/gm_layer"
+	"github.com/tmazitov/tgame.git/internal/maps"
+	"github.com/tmazitov/tgame.git/internal/player"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
+	"github.com/tmazitov/tgame.git/pkg/gm_map"
 )
 
 func main() {
+	var (
+		m   *gm_map.Map
+		err error
+		pl  *player.Player
+	)
+	pl, err = player.NewPlayer(0, 0, player.PlayerImagesPaths{
+		Tiles:  "../assets/textures/characters/Humans_Smith.png",
+		Shadow: "../assets/textures/characters/shadow.png",
+	})
+	if err != nil {
+		panic(err)
+	}
+	if pl == nil {
+		panic("Player is nil!")
+	}
+
 	game := gm_machine.NewGameMachine("Title")
 	if game == nil {
 		panic("Game is nil!")
 	}
-	game.AddLayer(
-		ground.NewGround(
-			[]*gm_layer.Layer{
-				gm_layer.NewLayer(
-					"ground_1",
-					ground.GroundRaw(0),
-					"../assets/textures/tilesets/grass.png",
-				),
-			},
-		),
-	)
+
+	if m, err = maps.MainMap(); err != nil {
+		panic(err)
+	}
+	game.AddPlayer(pl)
+	game.AddMap(m)
 	game.Run()
 }

@@ -8,12 +8,37 @@ import (
 )
 
 type Layer struct {
-	tiles []int
 	name  string
+	raw   *Raw
 	image *Image
 }
 
-func NewLayer(name string, tiles []int, imagePath string) *Layer {
+func NewLayer(name string, rawPath string, imagePath string) (*Layer, error) {
+
+	var (
+		image *Image
+		raw   *Raw
+		err   error
+	)
+
+	image, err = NewImageByPath(imagePath)
+	if err != nil {
+		return nil, err
+	}
+
+	raw, err = NewRaw(rawPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Layer{
+		raw:   raw,
+		name:  name,
+		image: image,
+	}, err
+}
+
+func NewLayerByRaw(name string, raw *Raw, imagePath string) (*Layer, error) {
 
 	var (
 		image *Image
@@ -22,18 +47,18 @@ func NewLayer(name string, tiles []int, imagePath string) *Layer {
 
 	image, err = NewImageByPath(imagePath)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	return &Layer{
-		tiles: tiles,
+		raw:   raw,
 		name:  name,
 		image: image,
-	}
+	}, nil
 }
 
 func (l *Layer) GetValue() []int {
-	return l.tiles
+	return l.raw.tiles
 }
 
 func GetCoordsByTile(image *Image, tile int) (int, int) {
@@ -45,11 +70,12 @@ func GetTranslateByTile(index int) (float64, float64) {
 }
 
 func (l *Layer) Draw(screen *ebiten.Image) {
-	for i, tile := range l.tiles {
+	for i, tile := range l.GetValue() {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(GetTranslateByTile(i))
 
 		sx, sy := GetCoordsByTile(l.image, tile)
+		// fmt.Printf("draw %s : %d %d : %d %d\n", l.name, sx, sy, i, tile)
 		screen.DrawImage(l.image.Inst.SubImage(image.Rect(sx, sy, sx+stgs.TileSize, sy+stgs.TileSize)).(*ebiten.Image), op)
 	}
 }
