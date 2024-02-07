@@ -5,14 +5,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/tmazitov/tgame.git/internal/player"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
-	gm_layer "github.com/tmazitov/tgame.git/pkg/gm_layer"
 	gm_obj "github.com/tmazitov/tgame.git/pkg/gm_obj"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
 type GameMachine struct {
 	title    string
-	layers   []*gm_layer.Layer
+	layers   []ILayer
 	sprites  []int
 	objs     []*gm_obj.GameObj
 	keys     []ebiten.Key
@@ -22,7 +21,10 @@ type GameMachine struct {
 
 func NewGameMachine(title string) *GameMachine {
 
-	var player *player.Player = player.NewPlayer(0, 0, "../assets/textures/characters/Humans_Smith.png")
+	var player *player.Player = player.NewPlayer(0, 0, player.PlayerImagesPaths{
+		Tiles:  "../assets/textures/characters/Humans_Smith.png",
+		Shadow: "../assets/textures/characters/shadow.png",
+	})
 
 	if player == nil {
 		return nil
@@ -30,7 +32,7 @@ func NewGameMachine(title string) *GameMachine {
 
 	return &GameMachine{
 		title:    title,
-		layers:   nil,
+		layers:   []ILayer{},
 		sprites:  []int{},
 		objs:     []*gm_obj.GameObj{},
 		entities: []gm_entity.GameEntity{player},
@@ -45,7 +47,7 @@ func (g *GameMachine) Update() error {
 	return nil
 }
 
-func (g *GameMachine) AddLayer(layer *gm_layer.Layer) {
+func (g *GameMachine) AddLayer(layer ILayer) {
 	if layer == nil {
 		return
 	}

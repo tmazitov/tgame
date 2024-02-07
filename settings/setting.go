@@ -13,3 +13,4 @@ const TileYCount = ScreenHeight / TileSize
 // PLAYER SETTINGS
 
 const PlayerSpeed = 1
+const PlayerSize = 32

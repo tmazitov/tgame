@@ -1,9 +1,7 @@
 package player
 
 import (
-	"image"
 	"log"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
@@ -11,59 +9,62 @@ import (
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
+type PlayerImagesPaths struct {
+	Tiles  string
+	Shadow string
+}
+
+type PlayerImages struct {
+	Tiles  *gm_layer.Image
+	Shadow *gm_layer.Image
+}
+
 type Player struct {
 	X           float32
 	Y           float32
 	Speed       float32
 	anime       *PlayerAnime
-	image       *gm_layer.Image
+	images      *PlayerImages
 	lastAction  PlayerAction
 	actionState PlayerAction
 	attack      *PlayerAttackSystem
 }
 
-func NewPlayer(x, y float32, tilesImagePath string) *Player {
+func NewPlayer(x, y float32, imagesPaths PlayerImagesPaths) *Player {
 
 	var (
-		file        *os.File
 		err         error
-		img         image.Image
-		playerImg   *gm_layer.Image
 		playerAnime *PlayerAnime
 		pl          *Player
 	)
-
-	if file, err = os.Open(tilesImagePath); err != nil {
-		return nil
-	}
-	defer file.Close()
-
-	if img, _, err = image.Decode(file); err != nil {
-		return nil
-	}
-
-	if playerImg = gm_layer.NewImage(ebiten.NewImageFromImage(img)); err != nil {
-		return nil
-	}
-
-	if playerAnime = NewPlayerAnime(playerImg); err != nil {
-		return nil
-	}
 
 	pl = &Player{
 		X:           x,
 		Y:           y,
 		Speed:       stgs.PlayerSpeed,
-		image:       playerImg,
+		images:      &PlayerImages{},
 		anime:       playerAnime,
 		actionState: Idle_PlayerAction,
 		attack:      nil,
+	}
+
+	if pl.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles); err != nil {
+		return nil
+	}
+
+	if pl.images.Shadow, err = gm_layer.NewImageByPath(imagesPaths.Shadow); err != nil {
+		return nil
+	}
+
+	if pl.anime = NewPlayerAnime(pl.images.Tiles); err != nil {
+		return nil
 	}
 
 	pl.attack = NewPlayerAttackSystem(&pl.X, &pl.Y, &pl.lastAction)
 	if pl.attack == nil {
 		return nil
 	}
+
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
 	}
@@ -88,6 +89,12 @@ func FlipVertical(source *ebiten.Image) *ebiten.Image {
 	return result
 }
 
+func (p *Player) drawShadow(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(p.X), float64(p.Y))
+	screen.DrawImage(p.images.Shadow.Inst, op)
+}
+
 func (p *Player) Draw(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
@@ -96,7 +103,9 @@ func (p *Player) Draw(screen *ebiten.Image) {
 	if p.actionState == Left_PlayerAction || p.lastAction == Left_PlayerAction {
 		tile = FlipVertical(tile)
 	}
+
 	screen.DrawImage(tile, op)
+	p.drawShadow(screen)
 
 	for _, fireball := range p.attack.GetFireballs() {
 		fireball.Move()

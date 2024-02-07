@@ -7,12 +7,12 @@ import (
 )
 
 type GameObjOptions struct {
-	X      int
-	Y      int
-	Width  int
-	Height int
-	Raw    []int
-	Image  *gm_layer.Image
+	X         int
+	Y         int
+	Width     int
+	Height    int
+	Raw       []int
+	ImagePath string
 }
 
 type GameObj struct {
@@ -35,7 +35,8 @@ func NewGameObj(name string, opt GameObjOptions) *GameObj {
 		raw:    opt.Raw,
 		layer:  nil,
 	}
-	obj.makeLayer(opt.Image)
+
+	obj.makeLayer(opt.ImagePath)
 
 	return obj
 }
@@ -44,7 +45,7 @@ func (g *GameObj) Draw(screen *ebiten.Image) {
 	g.layer.Draw(screen)
 }
 
-func (g *GameObj) makeLayer(image *gm_layer.Image) {
+func (g *GameObj) makeLayer(imagePath string) {
 	var (
 		layer []int = []int{}
 	)
@@ -76,5 +77,5 @@ func (g *GameObj) makeLayer(image *gm_layer.Image) {
 		}
 	}
 
-	g.layer = gm_layer.NewLayer(g.Name, layer, image)
+	g.layer = gm_layer.NewLayer(g.Name, layer, imagePath)
 }

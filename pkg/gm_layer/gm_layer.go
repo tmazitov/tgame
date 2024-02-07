@@ -13,7 +13,18 @@ type Layer struct {
 	image *Image
 }
 
-func NewLayer(name string, tiles []int, image *Image) *Layer {
+func NewLayer(name string, tiles []int, imagePath string) *Layer {
+
+	var (
+		image *Image
+		err   error
+	)
+
+	image, err = NewImageByPath(imagePath)
+	if err != nil {
+		return nil
+	}
+
 	return &Layer{
 		tiles: tiles,
 		name:  name,
