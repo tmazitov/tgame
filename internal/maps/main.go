@@ -21,19 +21,21 @@ func MainMap() (*gm_map.Map, error) {
 		grass           *gm_layer.Layer
 		roads           *gm_layer.Layer
 		err             error
+		size            int = stgs.TileSize
 	)
 
 	m, err = gm_map.NewMap(gm_map.MapOpt{
 		GroundRawPath:   groundRawPath,
 		GroundImagePath: groundImagePath,
+		TileSize:        stgs.TileSize,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if grass, err = gm_layer.NewLayer("grass", grassRawPath, grassImagePath); err != nil {
+	if grass, err = gm_layer.NewLayer("grass", grassRawPath, grassImagePath, size); err != nil {
 		return nil, err
 	}
-	if roads, err = gm_layer.NewLayer("roads", roadsRawPath, roadsImagePath); err != nil {
+	if roads, err = gm_layer.NewLayer("roads", roadsRawPath, roadsImagePath, size); err != nil {
 		return nil, err
 	}
 

@@ -1,6 +1,7 @@
 package gm_layer
 
 import (
+	"fmt"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -8,12 +9,20 @@ import (
 )
 
 type Layer struct {
-	name  string
-	raw   *Raw
-	image *Image
+	Name     string
+	raw      *Raw
+	image    *Image
+	TileSize int
 }
 
-func NewLayer(name string, rawPath string, imagePath string) (*Layer, error) {
+type LayerBorder struct {
+	X      float64
+	Y      float64
+	Width  int
+	Height int
+}
+
+func NewLayer(name string, rawPath string, imagePath string, tileSize int) (*Layer, error) {
 
 	var (
 		image *Image
@@ -32,13 +41,14 @@ func NewLayer(name string, rawPath string, imagePath string) (*Layer, error) {
 	}
 
 	return &Layer{
-		raw:   raw,
-		name:  name,
-		image: image,
+		raw:      raw,
+		Name:     name,
+		TileSize: tileSize,
+		image:    image,
 	}, err
 }
 
-func NewLayerByRaw(name string, raw *Raw, imagePath string) (*Layer, error) {
+func NewLayerByRaw(name string, raw *Raw, imagePath string, tileSize int) (*Layer, error) {
 
 	var (
 		image *Image
@@ -51,14 +61,52 @@ func NewLayerByRaw(name string, raw *Raw, imagePath string) (*Layer, error) {
 	}
 
 	return &Layer{
-		raw:   raw,
-		name:  name,
-		image: image,
+		raw:      raw,
+		Name:     name,
+		image:    image,
+		TileSize: tileSize,
 	}, nil
 }
 
-func (l *Layer) GetValue() []int {
-	return l.raw.tiles
+func (l *Layer) GetSizes() (int, int) {
+	return l.raw.height, l.raw.width
+}
+
+func (l *Layer) GetValue(b LayerBorder) []int {
+	var (
+		initX         float64 = b.X / float64(l.TileSize)
+		initY         float64 = b.Y / float64(l.TileSize)
+		initWidth     float64 = float64(b.Width / l.TileSize)
+		initHeight    float64 = float64(b.Height / l.TileSize)
+		layerHeight   float64 = float64(l.raw.height)
+		layerWidth    float64 = float64(l.raw.width)
+		limitValues   []int   = []int{}
+		limitXCounter float64 = 0
+		limitYCounter float64 = 0
+	)
+
+	if initHeight+initY > float64(l.raw.height) || initWidth+initX > float64(l.raw.width) {
+		return l.raw.tiles
+	}
+
+	for _, tile := range l.raw.tiles {
+		if limitXCounter >= initX && limitXCounter < initX+initWidth &&
+			limitYCounter >= initY && limitYCounter < initY+initHeight {
+			limitValues = append(limitValues, tile)
+		}
+		if limitXCounter == layerWidth {
+			limitXCounter = 0
+			limitYCounter += 1
+			fmt.Printf("tile map size : %d\n", len(limitValues))
+		} else {
+			limitXCounter += 1
+		}
+		if limitYCounter == initHeight+initY || limitYCounter == layerHeight {
+			break
+		}
+	}
+
+	return limitValues
 }
 
 func GetCoordsByTile(image *Image, tile int) (int, int) {
@@ -69,8 +117,8 @@ func GetTranslateByTile(index int) (float64, float64) {
 	return float64((index % stgs.TileXCount) * stgs.TileSize), float64((index / stgs.TileXCount) * stgs.TileSize)
 }
 
-func (l *Layer) Draw(screen *ebiten.Image) {
-	for i, tile := range l.GetValue() {
+func (l *Layer) Draw(screen *ebiten.Image, b LayerBorder) {
+	for i, tile := range l.GetValue(b) {
 		if tile == 0 {
 			continue
 		}

@@ -43,14 +43,14 @@ func (g *Ground) AddLayer(layer *gm_layer.Layer) {
 	g.additional = append(g.additional, layer)
 }
 
-func (g *Ground) Draw(screen *ebiten.Image) {
+func (g *Ground) Draw(screen *ebiten.Image, border gm_layer.LayerBorder) {
 	if g.background != nil {
-		g.background.Draw(screen)
+		g.background.Draw(screen, border)
 	}
 
 	if g.additional != nil {
 		for _, layer := range g.additional {
-			layer.Draw(screen)
+			layer.Draw(screen, border)
 		}
 	}
 }

@@ -2,7 +2,6 @@ package gm_layer
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -39,7 +38,6 @@ func NewRaw(tilePath string) (*Raw, error) {
 	for scanner.Scan() {
 		line = scanner.Text()
 		lineWidth = 0
-		fmt.Printf("line: %s\n", line)
 		if len(line) == 0 {
 			return nil, ErrMapParsingEmptyLine
 		}
@@ -51,8 +49,6 @@ func NewRaw(tilePath string) (*Raw, error) {
 			lineWidth++
 			raw = append(raw, digit)
 		}
-		fmt.Printf("width: %d, len(line): %d\n", width, lineWidth)
-
 		if width != 0 && width != lineWidth {
 			return nil, ErrMapParsingDifferentLine
 		}
