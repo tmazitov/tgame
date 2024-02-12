@@ -3,6 +3,7 @@ package gm_layer
 import (
 	"fmt"
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -75,19 +76,19 @@ func (l *Layer) GetSizes() (int, int) {
 
 func (l *Layer) GetValue(b LayerBorder) [][]int {
 	var (
-		initX         float64 = b.X / float64(l.TileSize)
-		initY         float64 = b.Y / float64(l.TileSize)
-		initWidth     float64 = float64(b.Width/l.TileSize) + 1
-		initHeight    float64 = float64(b.Height / l.TileSize)
-		layerHeight   float64 = float64(l.raw.height)
-		layerWidth    float64 = float64(l.raw.width)
+		initX         int     = int(math.Round(b.X)) / l.TileSize
+		initY         int     = int(math.Round(b.Y)) / l.TileSize
+		initWidth     int     = b.Width/l.TileSize + 1
+		initHeight    int     = b.Height / l.TileSize
+		layerHeight   int     = l.raw.height
+		layerWidth    int     = l.raw.width
 		limitValues   [][]int = [][]int{}
 		limitRow      []int   = []int{}
-		limitXCounter float64 = 0
-		limitYCounter float64 = 0
+		limitXCounter int     = 0
+		limitYCounter int     = 0
 	)
 
-	if initHeight+initY > float64(l.raw.height) || initWidth+initX > float64(l.raw.width) {
+	if initHeight+initY > l.raw.height || initWidth+initX > l.raw.width {
 		return [][]int{}
 	}
 
@@ -96,16 +97,20 @@ func (l *Layer) GetValue(b LayerBorder) [][]int {
 	}
 
 	for _, tile := range l.raw.tiles {
-		if int(b.X)%l.TileSize != 0 &&
-			limitXCounter >= initX && limitXCounter < initX+initWidth &&
+		if limitXCounter >= initX && limitXCounter <= initX+initWidth &&
 			limitYCounter >= initY && limitYCounter <= initY+initHeight {
 			limitRow = append(limitRow, tile)
 		}
-		if int(b.X)%l.TileSize == 0 &&
-			limitXCounter >= initX && limitXCounter <= initX+initWidth &&
-			limitYCounter >= initY && limitYCounter <= initY+initHeight {
-			limitRow = append(limitRow, tile)
-		}
+		// if int(b.X)%l.TileSize != 0 &&
+		// 	limitXCounter >= initX && limitXCounter <= initX+initWidth &&
+		// 	limitYCounter >= initY && limitYCounter <= initY+initHeight {
+		// 	limitRow = append(limitRow, tile)
+		// }
+		// if int(b.X)%l.TileSize == 0 &&
+		// 	limitXCounter >= initX && limitXCounter < initX+initWidth &&
+		// 	limitYCounter >= initY && limitYCounter <= initY+initHeight {
+		// 	limitRow = append(limitRow, tile)
+		// }
 		if limitXCounter == layerWidth {
 			if len(limitRow) != 0 {
 				limitValues = append(limitValues, limitRow)
@@ -136,8 +141,8 @@ func CalcTilePosition(index int, rowIndex int) (float64, float64) {
 func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBorder) {
 
 	var (
-		dx        int = int(b.X) % l.TileSize
-		dy        int = int(b.Y) % l.TileSize
+		dx        int = int(math.Round(b.X)) % l.TileSize
+		dy        int = int(math.Round(b.Y)) % l.TileSize
 		posX      float64
 		posY      float64
 		op        *ebiten.DrawImageOptions
@@ -164,12 +169,12 @@ func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBo
 			posY -= float64(dy)
 		}
 
-		if dx == 0 {
-			posX -= float64(tileSize)
-		}
-		if dy == 0 && rowIndex != 0 {
-			posY -= float64(tileSize)
-		}
+		// if dx == 0 {
+		// 	posX -= float64(tileSize)
+		// }
+		// if dy == 0 && rowIndex != 0 {
+		// 	posY -= float64(tileSize)
+		// }
 
 		op = &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(posX, posY)
@@ -178,10 +183,8 @@ func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBo
 
 		frameX, frameY = CalcFramePosition(l.image, tile-1)
 		if rowIndex == 0 {
-			if dy == 0 {
-				return
-			}
 			tileFrame = l.firstRowTile(dx, dy, tileIndex, width, frameX, frameY)
+			fmt.Printf("tile %d %d , %f %f\n", tileFrame.Dx(), tileFrame.Dy(), posX, posY)
 			screen.DrawImage(l.image.Inst.SubImage(tileFrame).(*ebiten.Image), op)
 			continue
 		}
