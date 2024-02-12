@@ -78,10 +78,9 @@ func (l *Layer) GetValue(b LayerBorder) [][]int {
 	var (
 		initX         int     = int(math.Round(b.X)) / l.TileSize
 		initY         int     = int(math.Round(b.Y)) / l.TileSize
-		initWidth     int     = b.Width/l.TileSize + 1
+		initWidth     int     = b.Width / l.TileSize
 		initHeight    int     = b.Height / l.TileSize
-		layerHeight   int     = l.raw.height
-		layerWidth    int     = l.raw.width
+		layerWidth    int     = l.raw.width - 1
 		limitValues   [][]int = [][]int{}
 		limitRow      []int   = []int{}
 		limitXCounter int     = 0
@@ -92,25 +91,13 @@ func (l *Layer) GetValue(b LayerBorder) [][]int {
 		return [][]int{}
 	}
 
-	if int(b.Y)%l.TileSize != 0 {
-		initHeight += 1
-	}
-
+	fmt.Printf("width %d\n", layerWidth)
+	fmt.Printf("values : %d -- %d\n", initY, initY+initHeight)
 	for _, tile := range l.raw.tiles {
 		if limitXCounter >= initX && limitXCounter <= initX+initWidth &&
 			limitYCounter >= initY && limitYCounter <= initY+initHeight {
 			limitRow = append(limitRow, tile)
 		}
-		// if int(b.X)%l.TileSize != 0 &&
-		// 	limitXCounter >= initX && limitXCounter <= initX+initWidth &&
-		// 	limitYCounter >= initY && limitYCounter <= initY+initHeight {
-		// 	limitRow = append(limitRow, tile)
-		// }
-		// if int(b.X)%l.TileSize == 0 &&
-		// 	limitXCounter >= initX && limitXCounter < initX+initWidth &&
-		// 	limitYCounter >= initY && limitYCounter <= initY+initHeight {
-		// 	limitRow = append(limitRow, tile)
-		// }
 		if limitXCounter == layerWidth {
 			if len(limitRow) != 0 {
 				limitValues = append(limitValues, limitRow)
@@ -121,11 +108,10 @@ func (l *Layer) GetValue(b LayerBorder) [][]int {
 		} else {
 			limitXCounter += 1
 		}
-		if (limitYCounter > initHeight+initY) || limitYCounter == layerHeight {
+		if limitYCounter > initY+initHeight {
 			break
 		}
 	}
-
 	return limitValues
 }
 
@@ -150,7 +136,6 @@ func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBo
 		tileFrame image.Rectangle
 		frameX    int
 		width     int = b.Width / l.TileSize
-		height    int = b.Height / l.TileSize
 		frameY    int
 	)
 
@@ -184,13 +169,12 @@ func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBo
 		frameX, frameY = CalcFramePosition(l.image, tile-1)
 		if rowIndex == 0 {
 			tileFrame = l.firstRowTile(dx, dy, tileIndex, width, frameX, frameY)
-			fmt.Printf("tile %d %d , %f %f\n", tileFrame.Dx(), tileFrame.Dy(), posX, posY)
 			screen.DrawImage(l.image.Inst.SubImage(tileFrame).(*ebiten.Image), op)
 			continue
 		}
 		// Smooth X axis movement
 
-		if rowIndex != 0 && rowIndex != height-1 {
+		if rowIndex != 0 {
 			if tileIndex == 0 {
 				if dx != 0 {
 					tileFrame = image.Rect(frameX+dx, frameY, frameX+tileSize, frameY+tileSize)

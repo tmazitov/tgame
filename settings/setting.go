@@ -12,7 +12,7 @@ const TileYCount = ScreenHeight/TileSize + 1
 
 // PLAYER SETTINGS
 
-const PlayerSpeed = 1
+const PlayerSpeed = 2.5
 const PlayerSize = 32
 
 // PROJECTILE SETTINGS

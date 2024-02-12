@@ -116,5 +116,5 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	for _, entity := range m.entities {
 		entity.Draw(screen)
 	}
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("camera %f %f\n", m.camera.X, m.camera.Y))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("camera %f %f %f \n", m.camera.X, m.camera.Y, m.camera.limitX))
 }

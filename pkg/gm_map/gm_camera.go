@@ -31,8 +31,8 @@ func (c *Camera) SetSpeed(speed *float64) {
 }
 
 func (c *Camera) SetLimits(limitX, limitY float64) {
-	c.limitX = limitX
-	c.limitY = limitY
+	c.limitX = limitX - float64(c.width)
+	c.limitY = limitY - float64(c.height)
 }
 
 func checkIsDiagonalMovement(keys []bool) bool {
