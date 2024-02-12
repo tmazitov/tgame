@@ -11,12 +11,12 @@ import (
 func MainMap() (*gm_map.Map, error) {
 
 	var (
-		groundImagePath string = "../assets/textures/tilesets/grass.png"
-		groundRawPath   string = "../maps/map1/ground_1"
-		grassImagePath  string = "../assets/textures/tilesets/decor_16x16.png"
-		grassRawPath    string = "../maps/map1/ground_2"
-		roadsImagePath  string = "../assets/textures/tilesets/plains.png"
-		roadsRawPath    string = "../maps/map1/ground_3"
+		groundImagePath string = "assets/textures/tilesets/grass.png"
+		groundRawPath   string = "maps/map1/ground_1"
+		grassImagePath  string = "assets/textures/tilesets/decor_16x16.png"
+		grassRawPath    string = "maps/map1/ground_2"
+		roadsImagePath  string = "assets/textures/tilesets/plains.png"
+		roadsRawPath    string = "maps/map1/ground_3"
 		m               *gm_map.Map
 		grass           *gm_layer.Layer
 		roads           *gm_layer.Layer

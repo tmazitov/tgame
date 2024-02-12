@@ -30,11 +30,11 @@ func NewPlayerAttackSystem(playerX *float64, playerY *float64, playerLastMove *P
 		img         image.Image
 		images      []*ebiten.Image = []*ebiten.Image{}
 		imagesPaths                 = []string{
-			"../assets/textures/fireball/fireball_1.png",
-			"../assets/textures/fireball/fireball_2.png",
-			"../assets/textures/fireball/fireball_3.png",
-			"../assets/textures/fireball/fireball_4.png",
-			"../assets/textures/fireball/fireball_5.png",
+			"assets/textures/fireball/fireball_1.png",
+			"assets/textures/fireball/fireball_2.png",
+			"assets/textures/fireball/fireball_3.png",
+			"assets/textures/fireball/fireball_4.png",
+			"assets/textures/fireball/fireball_5.png",
 		}
 	)
 
