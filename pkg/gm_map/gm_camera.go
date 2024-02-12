@@ -1,7 +1,6 @@
 package gm_map
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -171,7 +170,6 @@ func (c *Camera) MovementHandler(keys []ebiten.Key, area CameraArea) (bool, erro
 	}
 
 	isDiagonalMovement = checkIsDiagonalMovement(pressedKeyArray)
-	fmt.Println(isDiagonalMovement)
 	if pressedKeyFound && isDiagonalMovement {
 		return c.handleDiagonalMove(pressedKeyArray, area)
 	} else if pressedKeyFound {
