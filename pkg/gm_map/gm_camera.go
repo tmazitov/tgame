@@ -210,16 +210,32 @@ func (c *Camera) handleDiagonalMove(pressedKeyArray []bool, area CameraArea) (bo
 		return false, ErrZeroCameraSpeed
 	}
 
-	if pressedKeyArray[0] && ((area == TopLeftCornerArea && pressedKeyArray[1]) || (area == TopRightCornerArea && pressedKeyArray[3])) {
+	if pressedKeyArray[0] && ((area == TopLeftCornerArea && pressedKeyArray[1]) ||
+		(area == TopRightCornerArea && pressedKeyArray[3]) ||
+		(area == RightBorderCameraArea && pressedKeyArray[3]) ||
+		(area == LeftBorderCameraArea && pressedKeyArray[1]) ||
+		(area == TopBorderCameraArea && (pressedKeyArray[1] || pressedKeyArray[3]))) {
 		isMoved, err = c.moveTop(*c.speed / math.Sqrt2)
 	}
-	if pressedKeyArray[1] && ((area == TopLeftCornerArea && pressedKeyArray[0]) || (area == BotLeftCornerArea && pressedKeyArray[2])) {
+	if pressedKeyArray[1] && ((area == TopLeftCornerArea && pressedKeyArray[0]) ||
+		(area == BotLeftCornerArea && pressedKeyArray[2]) ||
+		(area == TopBorderCameraArea && pressedKeyArray[0]) ||
+		(area == BotBorderCameraArea && pressedKeyArray[2]) ||
+		(area == LeftBorderCameraArea && (pressedKeyArray[2] || pressedKeyArray[0]))) {
 		isMoved, err = c.moveLeft(*c.speed / math.Sqrt2)
 	}
-	if pressedKeyArray[2] && ((area == BotLeftCornerArea && pressedKeyArray[1]) || (area == BotRightCornerArea && pressedKeyArray[3])) {
+	if pressedKeyArray[2] && ((area == BotLeftCornerArea && pressedKeyArray[1]) ||
+		(area == BotRightCornerArea && pressedKeyArray[3]) ||
+		(area == RightBorderCameraArea && pressedKeyArray[3]) ||
+		(area == LeftBorderCameraArea && pressedKeyArray[1]) ||
+		(area == BotBorderCameraArea && (pressedKeyArray[1] || pressedKeyArray[3]))) {
 		isMoved, err = c.moveBot(*c.speed / math.Sqrt2)
 	}
-	if pressedKeyArray[3] && ((area == TopRightCornerArea && pressedKeyArray[0]) || (area == BotRightCornerArea && pressedKeyArray[2])) {
+	if pressedKeyArray[3] && ((area == TopRightCornerArea && pressedKeyArray[0]) ||
+		(area == BotRightCornerArea && pressedKeyArray[2]) ||
+		(area == TopBorderCameraArea && pressedKeyArray[0]) ||
+		(area == BotBorderCameraArea && pressedKeyArray[2]) ||
+		(area == RightBorderCameraArea && (pressedKeyArray[2] || pressedKeyArray[0]))) {
 		isMoved, err = c.moveRight(*c.speed / math.Sqrt2)
 	}
 	return isMoved, err
