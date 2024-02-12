@@ -20,9 +20,9 @@ type PlayerImages struct {
 }
 
 type Player struct {
-	X           float32
-	Y           float32
-	Speed       float32
+	X           float64
+	Y           float64
+	Speed       float64
 	anime       *PlayerAnime
 	images      *PlayerImages
 	lastAction  PlayerAction
@@ -30,7 +30,7 @@ type Player struct {
 	attack      *PlayerAttackSystem
 }
 
-func NewPlayer(x, y float32, imagesPaths PlayerImagesPaths) (*Player, error) {
+func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 
 	var (
 		err         error
@@ -77,6 +77,10 @@ func (p *Player) GetNextTile() *ebiten.Image {
 		return (p.anime.IdleBot.GetTile())
 	}
 	return anime.GetTile()
+}
+
+func (p *Player) GetSpeed() *float64 {
+	return &p.Speed
 }
 
 func FlipVertical(source *ebiten.Image) *ebiten.Image {

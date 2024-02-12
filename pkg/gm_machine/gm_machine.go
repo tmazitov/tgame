@@ -34,7 +34,12 @@ func (g *GameMachine) Update() error {
 	}
 
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
-	g.player.MovementHandler(g.keys)
+
+	cameraIsMoved, err := g.maps[g.currentMap].MoveCamera(g.keys)
+	if err != nil {
+		return err
+	}
+	g.player.MovementHandler(g.keys, cameraIsMoved)
 	g.player.AttackHandler(g.keys)
 	return nil
 }

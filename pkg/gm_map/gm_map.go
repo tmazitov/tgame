@@ -1,7 +1,10 @@
 package gm_map
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	"github.com/tmazitov/tgame.git/pkg/gm_obj"
@@ -59,11 +62,27 @@ func NewMap(opt MapOpt) (*Map, error) {
 }
 
 func (m *Map) AddPlayer(player gm_entity.Player) {
+	if m.camera != nil {
+		m.camera.SetSpeed(player.GetSpeed())
+	}
+
 	m.player = player
 	m.entities = append(m.entities, player)
 }
 
 func (m *Map) AddCamera(camera *Camera) {
+	if camera == nil {
+		return
+	}
+
+	var (
+		limitX float64 = float64(m.tileSize * m.width)
+		limitY float64 = float64(m.tileSize * m.height)
+	)
+	if m.player != nil {
+		camera.SetSpeed(m.player.GetSpeed())
+	}
+	camera.SetLimits(limitX, limitY)
 	m.camera = camera
 }
 
@@ -71,6 +90,10 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 	if level == MapGroundLevel {
 		m.ground.AddLayer(layer)
 	}
+}
+
+func (m *Map) MoveCamera(keys []ebiten.Key) (bool, error) {
+	return m.camera.MovementHandler(keys)
 }
 
 func (m *Map) Draw(screen *ebiten.Image) {
@@ -93,4 +116,5 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	for _, entity := range m.entities {
 		entity.Draw(screen)
 	}
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("camera %f %f\n", m.camera.X, m.camera.Y))
 }

@@ -11,8 +11,8 @@ import (
 
 type PlayerAttackSystem struct {
 	fireballImages []*ebiten.Image
-	playerX        *float32
-	playerY        *float32
+	playerX        *float64
+	playerY        *float64
 	playerLastMove *PlayerAction
 	fireballs      []*PlayerFireball
 	block          bool
@@ -22,7 +22,7 @@ func (p *Player) AttackHandler(keys []ebiten.Key) {
 	p.attack.Handle(keys)
 }
 
-func NewPlayerAttackSystem(playerX *float32, playerY *float32, playerLastMove *PlayerAction) (*PlayerAttackSystem, error) {
+func NewPlayerAttackSystem(playerX *float64, playerY *float64, playerLastMove *PlayerAction) (*PlayerAttackSystem, error) {
 	var (
 		file        *os.File
 		err         error

@@ -10,5 +10,6 @@ type Player interface {
 	GameEntity
 	Draw(screen *ebiten.Image)
 	AttackHandler(keys []ebiten.Key)
-	MovementHandler(keys []ebiten.Key)
+	MovementHandler(keys []ebiten.Key, stay bool)
+	GetSpeed() *float64
 }

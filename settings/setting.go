@@ -7,8 +7,8 @@ const IsDebug = true
 const ScreenHeight = 320
 const ScreenWidth = 480
 const TileSize = 16
-const TileXCount = ScreenWidth / TileSize
-const TileYCount = ScreenHeight / TileSize
+const TileXCount = ScreenWidth/TileSize + 1
+const TileYCount = ScreenHeight/TileSize + 1
 
 // PLAYER SETTINGS
 
