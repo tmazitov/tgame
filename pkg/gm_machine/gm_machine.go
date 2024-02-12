@@ -29,13 +29,20 @@ func NewGameMachine(title string) *GameMachine {
 }
 
 func (g *GameMachine) Update() error {
+
+	var (
+		area             gm_map.CameraArea
+		playerX, playerY float64
+	)
+
 	if g.player == nil {
 		return nil
 	}
 
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
-
-	cameraIsMoved, err := g.maps[g.currentMap].MoveCamera(g.keys)
+	playerX, playerY = g.player.GetMoveSidePosition()
+	area = g.maps[g.currentMap].GetCameraArea(playerX, playerY)
+	cameraIsMoved, err := g.maps[g.currentMap].MoveCamera(g.keys, area)
 	if err != nil {
 		return err
 	}

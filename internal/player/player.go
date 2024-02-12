@@ -83,6 +83,26 @@ func (p *Player) GetSpeed() *float64 {
 	return &p.Speed
 }
 
+func (p *Player) GetPosition() (float64, float64) {
+	return p.X, p.Y
+}
+
+func (p *Player) GetMoveSidePosition() (float64, float64) {
+	if (p.actionState == Left_PlayerAction) || (p.lastAction == Left_PlayerAction) {
+		return p.X, p.Y
+	}
+	if (p.actionState == Right_PlayerAction) || (p.lastAction == Right_PlayerAction) {
+		return p.X + stgs.PlayerSize, p.Y
+	}
+	if (p.actionState == Top_PlayerAction) || (p.lastAction == Top_PlayerAction) {
+		return p.X, p.Y
+	}
+	if (p.actionState == Bot_PlayerAction) || (p.lastAction == Bot_PlayerAction) {
+		return p.X, p.Y + stgs.PlayerSize
+	}
+	return p.X, p.Y
+}
+
 func FlipVertical(source *ebiten.Image) *ebiten.Image {
 	result := ebiten.NewImage(source.Bounds().Dx(), source.Bounds().Dy())
 	op := &ebiten.DrawImageOptions{}

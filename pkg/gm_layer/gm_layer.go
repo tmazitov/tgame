@@ -1,12 +1,10 @@
 package gm_layer
 
 import (
-	"fmt"
 	"image"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
@@ -91,8 +89,6 @@ func (l *Layer) GetValue(b LayerBorder) [][]int {
 		return [][]int{}
 	}
 
-	fmt.Printf("width %d\n", layerWidth)
-	fmt.Printf("values : %d -- %d\n", initY, initY+initHeight)
 	for _, tile := range l.raw.tiles {
 		if limitXCounter >= initX && limitXCounter <= initX+initWidth &&
 			limitYCounter >= initY && limitYCounter <= initY+initHeight {
@@ -139,7 +135,7 @@ func (l *Layer) DrawRow(screen *ebiten.Image, row []int, rowIndex int, b LayerBo
 		frameY    int
 	)
 
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d %d\n", dx, dy), 5, 20)
+	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d %d\n", dx, dy), 5, 20)
 
 	for tileIndex, tile := range row {
 		if tile == 0 {

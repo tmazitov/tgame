@@ -1,10 +1,7 @@
 package gm_map
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	"github.com/tmazitov/tgame.git/pkg/gm_obj"
@@ -92,8 +89,12 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 	}
 }
 
-func (m *Map) MoveCamera(keys []ebiten.Key) (bool, error) {
-	return m.camera.MovementHandler(keys)
+func (m *Map) MoveCamera(keys []ebiten.Key, area CameraArea) (bool, error) {
+	return m.camera.MovementHandler(keys, area)
+}
+
+func (m *Map) GetCameraArea(x, y float64) CameraArea {
+	return m.camera.GetPointArea(x, y)
 }
 
 func (m *Map) Draw(screen *ebiten.Image) {
@@ -116,5 +117,9 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	for _, entity := range m.entities {
 		entity.Draw(screen)
 	}
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("camera %f %f %f \n", m.camera.X, m.camera.Y, m.camera.limitX))
+
+	// ebitenutil.DebugPrint(screen, fmt.Sprintf("area %d\n", m.GetCameraArea(m.player.GetPosition())))
+	// relX, relY, inCamera := m.camera.GetRelativeCoords(m.player.GetPosition())
+	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("area %f %f %t \n", relX, relY, inCamera), 300, 0)
+	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("camera %f %f %f \n", m.camera.X, m.camera.Y, m.camera.limitX), 0, 30)
 }
