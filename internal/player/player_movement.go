@@ -23,7 +23,7 @@ func checkIsDiagonalMovement(keys []bool) bool {
 		keys[2] && keys[1]
 }
 
-func (p *Player) MovementHandler(keys []ebiten.Key) {
+func (p *Player) MovementHandler(keys []ebiten.Key, stay bool) {
 
 	var (
 		pressedKeyFound    bool   = false
@@ -63,41 +63,41 @@ func (p *Player) MovementHandler(keys []ebiten.Key) {
 	isDiagonalMovement = checkIsDiagonalMovement(pressedKeyArray)
 
 	if pressedKeyFound && isDiagonalMovement {
-		p.handleDiagonalMove(pressedKeyArray)
+		p.handleDiagonalMove(pressedKeyArray, stay)
 	} else if pressedKeyFound {
-		p.handleSimpleMove(pressedKeyArray)
+		p.handleSimpleMove(pressedKeyArray, stay)
 	} else if p.actionState != Idle_PlayerAction {
 		p.idle()
 	}
 }
 
-func (p *Player) handleSimpleMove(pressedKeyArray []bool) {
+func (p *Player) handleSimpleMove(pressedKeyArray []bool, stay bool) {
 	if pressedKeyArray[0] {
-		p.moveTop(p.Speed)
+		p.moveTop(p.Speed, stay)
 	}
 	if pressedKeyArray[1] {
-		p.moveLeft(p.Speed)
+		p.moveLeft(p.Speed, stay)
 	}
 	if pressedKeyArray[2] {
-		p.moveBot(p.Speed)
+		p.moveBot(p.Speed, stay)
 	}
 	if pressedKeyArray[3] {
-		p.moveRight(p.Speed)
+		p.moveRight(p.Speed, stay)
 	}
 }
 
-func (p *Player) handleDiagonalMove(pressedKeyArray []bool) {
+func (p *Player) handleDiagonalMove(pressedKeyArray []bool, stay bool) {
 	if pressedKeyArray[0] {
-		p.moveTop(p.Speed / math.Sqrt2)
+		p.moveTop(p.Speed/math.Sqrt2, stay)
 	}
 	if pressedKeyArray[1] {
-		p.moveLeft(p.Speed / math.Sqrt2)
+		p.moveLeft(p.Speed/math.Sqrt2, stay)
 	}
 	if pressedKeyArray[2] {
-		p.moveBot(p.Speed / math.Sqrt2)
+		p.moveBot(p.Speed/math.Sqrt2, stay)
 	}
 	if pressedKeyArray[3] {
-		p.moveRight(p.Speed / math.Sqrt2)
+		p.moveRight(p.Speed/math.Sqrt2, stay)
 	}
 }
 
@@ -106,29 +106,37 @@ func (p *Player) idle() {
 	p.actionState = Idle_PlayerAction
 }
 
-func (p *Player) moveLeft(speed float32) {
-	p.X -= speed
+func (p *Player) moveLeft(speed float64, stay bool) {
+	if !stay {
+		p.X -= speed
+	}
 	if p.actionState != Left_PlayerAction {
 		p.lastAction = p.actionState
 		p.actionState = Left_PlayerAction
 	}
 }
-func (p *Player) moveRight(speed float32) {
-	p.X += speed
+func (p *Player) moveRight(speed float64, stay bool) {
+	if !stay {
+		p.X += speed
+	}
 	if p.actionState != Right_PlayerAction {
 		p.lastAction = p.actionState
 		p.actionState = Right_PlayerAction
 	}
 }
-func (p *Player) moveTop(speed float32) {
-	p.Y -= speed
+func (p *Player) moveTop(speed float64, stay bool) {
+	if !stay {
+		p.Y -= speed
+	}
 	if p.actionState != Top_PlayerAction {
 		p.lastAction = p.actionState
 		p.actionState = Top_PlayerAction
 	}
 }
-func (p *Player) moveBot(speed float32) {
-	p.Y += speed
+func (p *Player) moveBot(speed float64, stay bool) {
+	if !stay {
+		p.Y += speed
+	}
 	if p.actionState != Bot_PlayerAction {
 		p.lastAction = p.actionState
 		p.actionState = Bot_PlayerAction

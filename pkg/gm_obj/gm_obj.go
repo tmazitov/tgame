@@ -43,7 +43,7 @@ func NewGameObj(name string, opt GameObjOptions) (*GameObj, error) {
 }
 
 func (g *GameObj) Draw(screen *ebiten.Image) {
-	g.layer.Draw(screen)
+	// g.layer.Draw(screen)
 }
 
 func (g *GameObj) makeLayer(imagePath string) error {
@@ -79,10 +79,11 @@ func (g *GameObj) makeLayer(imagePath string) error {
 		}
 	}
 
-	g.layer, err = gm_layer.NewLayerByRaw(
-		g.Name,
-		gm_layer.NewRawByTiles(tiles, g.Width, g.Height),
-		imagePath,
-	)
+	// g.layer, err = gm_layer.NewLayerByRaw(
+	// 	g.Name,
+	// 	gm_layer.NewRawByTiles(tiles, g.Width, g.Height),
+	// 	imagePath,
+
+	// )
 	return err
 }

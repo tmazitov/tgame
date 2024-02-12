@@ -21,6 +21,7 @@ import (
 	"github.com/tmazitov/tgame.git/internal/player"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
+	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
 func main() {
@@ -48,6 +49,7 @@ func main() {
 	if m, err = maps.MainMap(); err != nil {
 		panic(err)
 	}
+	m.AddCamera(gm_map.NewCamera(stgs.ScreenHeight, stgs.ScreenWidth))
 	game.AddPlayer(pl)
 	game.AddMap(m)
 	game.Run()

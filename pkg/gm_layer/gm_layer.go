@@ -1,19 +1,24 @@
 package gm_layer
 
 import (
-	"image"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	stgs "github.com/tmazitov/tgame.git/settings"
+	"math"
 )
 
 type Layer struct {
-	name  string
-	raw   *Raw
-	image *Image
+	Name     string
+	raw      *Raw
+	image    *Image
+	TileSize int
 }
 
-func NewLayer(name string, rawPath string, imagePath string) (*Layer, error) {
+type LayerBorder struct {
+	X      float64
+	Y      float64
+	Width  int
+	Height int
+}
+
+func NewLayer(name string, rawPath string, imagePath string, tileSize int) (*Layer, error) {
 
 	var (
 		image *Image
@@ -32,13 +37,14 @@ func NewLayer(name string, rawPath string, imagePath string) (*Layer, error) {
 	}
 
 	return &Layer{
-		raw:   raw,
-		name:  name,
-		image: image,
+		raw:      raw,
+		Name:     name,
+		TileSize: tileSize,
+		image:    image,
 	}, err
 }
 
-func NewLayerByRaw(name string, raw *Raw, imagePath string) (*Layer, error) {
+func NewLayerByRaw(name string, raw *Raw, imagePath string, tileSize int) (*Layer, error) {
 
 	var (
 		image *Image
@@ -51,34 +57,52 @@ func NewLayerByRaw(name string, raw *Raw, imagePath string) (*Layer, error) {
 	}
 
 	return &Layer{
-		raw:   raw,
-		name:  name,
-		image: image,
+		raw:      raw,
+		Name:     name,
+		image:    image,
+		TileSize: tileSize,
 	}, nil
 }
 
-func (l *Layer) GetValue() []int {
-	return l.raw.tiles
+func (l *Layer) GetSizes() (int, int) {
+	return l.raw.height, l.raw.width
 }
 
-func GetCoordsByTile(image *Image, tile int) (int, int) {
-	return (tile % image.TileXCount) * stgs.TileSize, (tile / image.TileXCount) * stgs.TileSize
-}
+func (l *Layer) GetTileRows(b LayerBorder) [][]int {
+	var (
+		initX         int     = int(math.Round(b.X)) / l.TileSize
+		initY         int     = int(math.Round(b.Y)) / l.TileSize
+		initWidth     int     = b.Width / l.TileSize
+		initHeight    int     = b.Height / l.TileSize
+		layerWidth    int     = l.raw.width - 1
+		limitValues   [][]int = [][]int{}
+		limitRow      []int   = []int{}
+		limitXCounter int     = 0
+		limitYCounter int     = 0
+	)
 
-func GetTranslateByTile(index int) (float64, float64) {
-	return float64((index % stgs.TileXCount) * stgs.TileSize), float64((index / stgs.TileXCount) * stgs.TileSize)
-}
-
-func (l *Layer) Draw(screen *ebiten.Image) {
-	for i, tile := range l.GetValue() {
-		if tile == 0 {
-			continue
-		}
-		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(GetTranslateByTile(i))
-
-		sx, sy := GetCoordsByTile(l.image, tile-1)
-		// fmt.Printf("draw %s : %d %d : %d %d\n", l.name, sx, sy, i, tile)
-		screen.DrawImage(l.image.Inst.SubImage(image.Rect(sx, sy, sx+stgs.TileSize, sy+stgs.TileSize)).(*ebiten.Image), op)
+	if initHeight+initY > l.raw.height || initWidth+initX > l.raw.width {
+		return [][]int{}
 	}
+
+	for _, tile := range l.raw.tiles {
+		if limitXCounter >= initX && limitXCounter <= initX+initWidth &&
+			limitYCounter >= initY && limitYCounter <= initY+initHeight {
+			limitRow = append(limitRow, tile)
+		}
+		if limitXCounter == layerWidth {
+			if len(limitRow) != 0 {
+				limitValues = append(limitValues, limitRow)
+				limitRow = []int{}
+			}
+			limitXCounter = 0
+			limitYCounter += 1
+		} else {
+			limitXCounter += 1
+		}
+		if limitYCounter > initY+initHeight {
+			break
+		}
+	}
+	return limitValues
 }

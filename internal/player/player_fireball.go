@@ -11,8 +11,8 @@ import (
 
 type FireballRemoveCallback func(*PlayerFireball)
 type PlayerFireball struct {
-	X              float32
-	Y              float32
+	X              float64
+	Y              float64
 	tileCounter    int
 	tileIterator   int
 	dest           *gm_geometry.Point
@@ -20,7 +20,7 @@ type PlayerFireball struct {
 	removeCallback FireballRemoveCallback
 }
 
-func NewPlayerFireball(x, y float32, dest *gm_geometry.Point, images []*ebiten.Image, removeCallback FireballRemoveCallback) *PlayerFireball {
+func NewPlayerFireball(x, y float64, dest *gm_geometry.Point, images []*ebiten.Image, removeCallback FireballRemoveCallback) *PlayerFireball {
 
 	var fireball *PlayerFireball = &PlayerFireball{
 		X:              x,
