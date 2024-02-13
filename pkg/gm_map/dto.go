@@ -1,5 +1,7 @@
 package gm_map
 
+import "github.com/hajimehoshi/ebiten/v2"
+
 type MapLevel int
 
 const (
@@ -21,5 +23,9 @@ const (
 	BotLeftCornerArea  CameraArea = 8
 	BotRightCornerArea CameraArea = 9
 )
+
+type IMapObj interface {
+	Draw(screen *ebiten.Image, camera *Camera)
+}
 
 const CameraBorderSize float64 = 64

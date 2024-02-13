@@ -4,14 +4,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
-	"github.com/tmazitov/tgame.git/pkg/gm_obj"
 )
 
 type Map struct {
 	ground   *Ground
 	player   gm_entity.Player
 	entities []gm_entity.GameEntity
-	objs     []*gm_obj.GameObj
+	objs     []IMapObj
 	width    int
 	height   int
 	tileSize int
@@ -52,7 +51,7 @@ func NewMap(opt MapOpt) (*Map, error) {
 		height:   height,
 		player:   nil,
 		tileSize: opt.TileSize,
-		objs:     []*gm_obj.GameObj{},
+		objs:     []IMapObj{},
 		entities: []gm_entity.GameEntity{},
 		camera:   nil,
 	}, nil
@@ -65,6 +64,10 @@ func (m *Map) AddPlayer(player gm_entity.Player) {
 
 	m.player = player
 	m.entities = append(m.entities, player)
+}
+
+func (m *Map) AddObj(obj IMapObj) {
+	m.objs = append(m.objs, obj)
 }
 
 func (m *Map) AddCamera(camera *Camera) {
@@ -102,8 +105,8 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	var border gm_layer.LayerBorder = gm_layer.LayerBorder{
 		X:      m.camera.X,
 		Y:      m.camera.Y,
-		Width:  m.camera.width,
-		Height: m.camera.height,
+		Width:  m.camera.Width,
+		Height: m.camera.Height,
 	}
 
 	m.ground.Draw(screen, border)
@@ -111,11 +114,13 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	// for _, layer := range g.layers {
 	// 	layer.Draw(screen)
 	// }
-	// for _, obj := range g.objs {
-	// 	obj.Draw(screen)
-	// }
+
 	for _, entity := range m.entities {
 		entity.Draw(screen)
+	}
+
+	for _, obj := range m.objs {
+		obj.Draw(screen, m.camera)
 	}
 
 	// ebitenutil.DebugPrint(screen, fmt.Sprintf("area %d\n", m.GetCameraArea(m.player.GetPosition())))

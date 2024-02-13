@@ -1,6 +1,7 @@
 package gm_map
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -11,8 +12,8 @@ type Camera struct {
 	Y      float64
 	limitX float64
 	limitY float64
-	width  int
-	height int
+	Width  int
+	Height int
 	speed  *float64
 }
 
@@ -20,8 +21,8 @@ func NewCamera(height, width int) *Camera {
 	return &Camera{
 		X:      0,
 		Y:      0,
-		width:  width,
-		height: height,
+		Width:  width,
+		Height: height,
 		speed:  nil,
 		limitX: 0,
 		limitY: 0,
@@ -33,8 +34,8 @@ func (c *Camera) SetSpeed(speed *float64) {
 }
 
 func (c *Camera) SetLimits(limitX, limitY float64) {
-	c.limitX = limitX - float64(c.width)
-	c.limitY = limitY - float64(c.height)
+	c.limitX = limitX - float64(c.Width)
+	c.limitY = limitY - float64(c.Height)
 }
 
 func (c *Camera) GetRelativeCoords(x, y float64) (float64, float64, bool) {
@@ -47,24 +48,25 @@ func (c *Camera) GetRelativeCoords(x, y float64) (float64, float64, bool) {
 
 	relativeX = x
 	relativeY = y
-	isInCamera = relativeX >= 0 && relativeX <= float64(c.width) &&
-		relativeY >= 0 && relativeY <= float64(c.height)
-	return relativeX, relativeY, isInCamera
+	isInCamera = relativeX >= 0 && relativeX <= float64(c.Width) &&
+		relativeY >= 0 && relativeY <= float64(c.Height)
+	return relativeX - c.X, relativeY - c.Y, isInCamera
 }
 
 func (c *Camera) GetPointArea(x, y float64) CameraArea {
 
 	var (
-		relX       float64
-		relY       float64
-		width      float64 = float64(c.width)
-		height     float64 = float64(c.height)
+		relX       float64 = x
+		relY       float64 = y
+		width      float64 = float64(c.Width)
+		height     float64 = float64(c.Height)
 		isInCamera bool
 	)
 
-	if relX, relY, isInCamera = c.GetRelativeCoords(x, y); !isInCamera {
+	if _, _, isInCamera = c.GetRelativeCoords(x, y); !isInCamera {
 		return NoneCameraArea
 	}
+	fmt.Printf("x %f, y %f\n", relX, relY)
 
 	// Top Left corner
 	if relX >= 0 && relX <= CameraBorderSize &&
