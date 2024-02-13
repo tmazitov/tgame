@@ -43,3 +43,7 @@ func NewImageByPath(path string) (*Image, error) {
 
 	return NewImage(ebiten.NewImageFromImage(img)), nil
 }
+
+func (i *Image) Rect(x, y, height, width int) *ebiten.Image {
+	return i.Inst.SubImage(image.Rect(x, y, x+width, y+height)).(*ebiten.Image)
+}
