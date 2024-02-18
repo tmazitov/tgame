@@ -11,3 +11,15 @@ func NewPoint(x, y float64) *Point {
 		Y: y,
 	}
 }
+
+func (p *Point) Shift(x, y float64) *Point {
+	p.X += x
+	p.Y += y
+	return p
+}
+
+func (p *Point) Update(x, y float64) *Point {
+	p.X = x
+	p.Y = y
+	return p
+}

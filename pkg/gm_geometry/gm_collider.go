@@ -1,48 +1,98 @@
 package gm_geometry
 
+import "fmt"
+
 type Collider struct {
+	X           *float64
+	Y           *float64
+	height      float64
+	width       float64
+	paddingTop  float64
+	paddingLeft float64
+
+	// points []*Point
 	topLeft  *Point
 	topRight *Point
-	botLeft  *Point
 	botRight *Point
+	botLeft  *Point
 
-	top    *Line
-	right  *Line
-	bottom *Line
-	left   *Line
+	// borders []*Line
+	top   *Line
+	right *Line
+	bot   *Line
+	left  *Line
 }
 
-func NewCollider(x, y, height, width float64) *Collider {
-	var coll Collider = Collider{}
-	coll.topLeft = NewPoint(x, y)
-	coll.topRight = NewPoint(x+width, y)
-	coll.botLeft = NewPoint(x, y+height)
-	coll.botRight = NewPoint(x+width, y+height)
+type ColliderOptions struct {
+	Height      float64
+	Width       float64
+	PaddingTop  float64
+	PaddingLeft float64
+}
 
-	coll.top = NewLine(coll.topLeft, coll.topRight)
-	coll.right = NewLine(coll.topRight, coll.botRight)
-	coll.bottom = NewLine(coll.botRight, coll.botLeft)
-	coll.left = NewLine(coll.botLeft, coll.topLeft)
-	return &coll
+func NewCollider(x, y *float64, opt ColliderOptions) *Collider {
+	return &Collider{
+		X:           x,
+		Y:           y,
+		height:      opt.Height,
+		width:       opt.Width,
+		paddingTop:  opt.PaddingTop,
+		paddingLeft: opt.PaddingLeft,
+		topLeft:     NewPoint(*x, *y),
+		topRight:    NewPoint(*x+opt.Width, *y),
+		botRight:    NewPoint(*x+opt.Width, *y+opt.Height),
+		botLeft:     NewPoint(*x, *y+opt.Height),
+		top:         NewLineByCoords(*x, *y, *x+opt.Width, *y),
+		right:       NewLineByCoords(*x+opt.Width, *y, *x+opt.Width, *y+opt.Height),
+		bot:         NewLineByCoords(*x, *y+opt.Height, *x+opt.Width, *y+opt.Height),
+		left:        NewLineByCoords(*x, *y, *x, *y+opt.Height),
+	}
 }
 
 func (c *Collider) Points() []*Point {
+
+	var (
+		collX float64 = *c.X
+		collY float64 = *c.Y
+	)
+
+	if c.paddingLeft > 0 {
+		collX += c.paddingLeft
+	}
+	if c.paddingTop > 0 {
+		collY += c.paddingTop
+	}
+
 	return []*Point{
-		c.topLeft,
-		c.topRight,
-		c.botRight,
-		c.botLeft,
+		c.topLeft.Update(collX, collY),
+		c.topRight.Update(collX+c.width, collY),
+		c.botRight.Update(collX+c.width, collY+c.height),
+		c.botLeft.Update(collX+c.width, collY+c.height),
 	}
 }
 
 func (c *Collider) GetBorders() []*Line {
-	var lines []*Line = []*Line{
-		NewLine(c.topLeft, c.topRight),
-		NewLine(c.topRight, c.botRight),
-		NewLine(c.botRight, c.botLeft),
-		NewLine(c.botLeft, c.topLeft),
+
+	var (
+		collX float64 = *c.X
+		collY float64 = *c.Y
+	)
+
+	if c.paddingLeft > 0 {
+		collX += c.paddingLeft
 	}
-	return lines
+	if c.paddingTop > 0 {
+		collY += c.paddingTop
+	}
+
+	fmt.Printf("end top: %f %f %f \n", collY, collX+c.width, c.width)
+
+	return []*Line{
+		c.top.Update(collX, collY, collX+c.width, collY),
+		c.right.Update(collX+c.width, collY, collX+c.width, collY+c.height),
+		c.bot.Update(collX, collY+c.height, collX+c.width, collY+c.height),
+		c.left.Update(collX, collY, collX, collY+c.height),
+	}
 }
 func (c *Collider) IsIntersect(coll *Collider) bool {
 	var (
@@ -65,6 +115,7 @@ func (c *Collider) IsIntersectWithVector(coll *Collider, x, y float64) bool {
 		selfBorders []*Line = c.GetBorders()
 	)
 	for _, line := range borders {
+		line.Shift(x, y)
 		for _, selfLine := range selfBorders {
 			if line.IsIntersect(selfLine) {
 				return true

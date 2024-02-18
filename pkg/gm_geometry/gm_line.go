@@ -12,6 +12,29 @@ func NewLine(start, end *Point) *Line {
 	}
 }
 
+func NewLineByCoords(x1, y1, x2, y2 float64) *Line {
+	return &Line{
+		Start: NewPoint(x1, y1),
+		End:   NewPoint(x2, y2),
+	}
+}
+
+func (l *Line) Shift(x, y float64) *Line {
+	l.Start.X += x
+	l.Start.Y += y
+	l.End.X += x
+	l.End.Y += y
+	return l
+}
+
+func (l *Line) Update(x1, y1, x2, y2 float64) *Line {
+	l.Start.X = x1
+	l.Start.Y = y1
+	l.End.X = x2
+	l.End.Y = y2
+	return l
+}
+
 func (l *Line) IsIntersect(line *Line) bool {
 	var (
 		x1, x2, x3, x4 float64 = l.Start.X, l.End.X, line.Start.X, line.End.X
