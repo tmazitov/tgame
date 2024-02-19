@@ -26,7 +26,21 @@ func (s *Slot) SetItem(item IItem) {
 }
 
 func (s *Slot) Draw(x, y float64, screen *ebiten.Image) {
+
+	var (
+		itemX float64
+		itemY float64
+	)
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(x, y)
 	screen.DrawImage(s.image.Inst, op)
+
+	if s.Value != nil {
+		itemX, itemY = s.Value.GetPosition()
+		if !s.Value.GetIsMoving() && itemX != x && itemY != y {
+			s.Value.SetPosition(x, y)
+		}
+		s.Value.Draw(screen)
+	}
 }

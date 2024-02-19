@@ -8,6 +8,7 @@ import (
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -73,6 +74,19 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 30); err != nil {
 		return nil, err
 	}
+
+	var item *gm_item.Item
+
+	item, err = gm_item.NewItem(0, "Stick", "assets/textures/stick_2.png", gm_item.ItemOptions{
+		MaxStackSize: 1,
+		X:            0,
+		Y:            0,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	pl.inventory.inventory.PutItemToFreeSlot(item)
 
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
