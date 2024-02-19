@@ -45,6 +45,7 @@ func (g *GameMachine) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 
 	m = g.maps[g.currentMap]
+
 	if m.PlayerMayMove(g.keys) {
 		playerX, playerY = g.player.GetMoveSidePosition()
 		area = m.GetCameraArea(playerX, playerY)
@@ -54,7 +55,7 @@ func (g *GameMachine) Update() error {
 		}
 		g.player.MovementHandler(g.keys, cameraIsMoved)
 	}
-
+	g.player.StaffHandler(g.keys)
 	g.player.AttackHandler(g.keys)
 	return nil
 }

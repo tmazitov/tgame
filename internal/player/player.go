@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
+	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -31,6 +32,7 @@ type Player struct {
 	lastAction  PlayerAction
 	actionState PlayerAction
 	attack      *PlayerAttackSystem
+	inventory   *PlayerInventory
 }
 
 func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
@@ -68,6 +70,10 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		return nil, err
 	}
 
+	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 30); err != nil {
+		return nil, err
+	}
+
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
 	}
@@ -92,6 +98,10 @@ func (p *Player) GetNextTile() *ebiten.Image {
 
 func (p *Player) GetCollider() *gm_geometry.Collider {
 	return p.coll
+}
+
+func (p *Player) GetInventory() *gm_inventory.Inventory {
+	return p.inventory.inventory
 }
 
 func (p *Player) GetMoveVector(keys []ebiten.Key) (float64, float64) {
@@ -223,4 +233,9 @@ func (p *Player) Draw(screen *ebiten.Image) {
 		fireball.Move()
 		fireball.Draw(screen)
 	}
+	p.inventory.Draw(screen)
+}
+
+func (p *Player) StaffHandler(keys []ebiten.Key) {
+	p.inventory.HandleToggle(keys)
 }

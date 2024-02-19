@@ -1,7 +1,5 @@
 package gm_geometry
 
-import "fmt"
-
 type Collider struct {
 	X           *float64
 	Y           *float64
@@ -84,8 +82,6 @@ func (c *Collider) GetBorders() []*Line {
 	if c.paddingTop > 0 {
 		collY += c.paddingTop
 	}
-
-	fmt.Printf("end top: %f %f %f \n", collY, collX+c.width, c.width)
 
 	return []*Line{
 		c.top.Update(collX, collY, collX+c.width, collY),
