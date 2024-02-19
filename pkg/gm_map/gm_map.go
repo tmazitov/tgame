@@ -96,6 +96,21 @@ func (m *Map) MoveCamera(keys []ebiten.Key, area CameraArea) (bool, error) {
 	return m.camera.MovementHandler(keys, area)
 }
 
+func (m *Map) PlayerMayMove(keys []ebiten.Key) bool {
+	var (
+		playerMoveVectorX float64
+		playerMoveVectorY float64
+	)
+
+	playerMoveVectorX, playerMoveVectorY = m.player.GetMoveVector(keys)
+	for _, obj := range m.objs {
+		if obj.IntersectVector(m.player, playerMoveVectorX, playerMoveVectorY) {
+			return false
+		}
+	}
+	return true
+}
+
 func (m *Map) GetCameraArea(x, y float64) CameraArea {
 	return m.camera.GetPointArea(x, y)
 }

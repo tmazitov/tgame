@@ -1,6 +1,9 @@
 package gm_map
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
+)
 
 type MapLevel int
 
@@ -26,6 +29,8 @@ const (
 
 type IMapObj interface {
 	Draw(screen *ebiten.Image, camera *Camera)
+	GetCollider() *gm_geometry.Collider
+	IntersectVector(obj gm_geometry.IMapIntersectable, x, y float64) bool
 }
 
 const CameraBorderSize float64 = 64

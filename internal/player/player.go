@@ -2,9 +2,11 @@ package player
 
 import (
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
+	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -23,6 +25,7 @@ type Player struct {
 	X           float64
 	Y           float64
 	Speed       float64
+	coll        *gm_geometry.Collider
 	anime       *PlayerAnime
 	images      *PlayerImages
 	lastAction  PlayerAction
@@ -46,6 +49,7 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		anime:       playerAnime,
 		actionState: Idle_PlayerAction,
 		attack:      nil,
+		coll:        nil,
 	}
 
 	if pl.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles); err != nil {
@@ -68,6 +72,13 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		log.Println("Player create\t\tsuccess")
 	}
 
+	pl.coll = gm_geometry.NewCollider(&pl.X, &pl.Y, gm_geometry.ColliderOptions{
+		Height:      16,
+		Width:       16,
+		PaddingTop:  8,
+		PaddingLeft: 8,
+	})
+
 	return pl, nil
 }
 
@@ -77,6 +88,84 @@ func (p *Player) GetNextTile() *ebiten.Image {
 		return (p.anime.IdleBot.GetTile())
 	}
 	return anime.GetTile()
+}
+
+func (p *Player) GetCollider() *gm_geometry.Collider {
+	return p.coll
+}
+
+func (p *Player) GetMoveVector(keys []ebiten.Key) (float64, float64) {
+
+	var (
+		moveTop         bool
+		moveBot         bool
+		moveLeft        bool
+		moveRight       bool
+		pressedKeyCount int     = 0
+		vectorX         float64 = 0
+		vectorY         float64 = 0
+	)
+
+	for _, key := range keys {
+		if key == ebiten.KeyW {
+			moveTop = true
+			pressedKeyCount++
+		}
+		if key == ebiten.KeyA {
+			moveLeft = true
+			pressedKeyCount++
+		}
+		if key == ebiten.KeyS {
+			moveBot = true
+			pressedKeyCount++
+		}
+		if key == ebiten.KeyD {
+			moveRight = true
+			pressedKeyCount++
+		}
+	}
+
+	if moveTop && moveBot {
+		moveTop = false
+		moveBot = false
+		pressedKeyCount--
+	}
+
+	if moveLeft && moveRight {
+		moveLeft = false
+		moveRight = false
+		pressedKeyCount--
+	}
+
+	if pressedKeyCount == 1 && moveTop {
+		return 0, -p.Speed
+	}
+	if pressedKeyCount == 1 && moveBot {
+		return 0, p.Speed
+	}
+	if pressedKeyCount == 1 && moveLeft {
+		return -p.Speed, 0
+	}
+	if pressedKeyCount == 1 && moveRight {
+		return p.Speed, 0
+	}
+
+	if pressedKeyCount == 2 {
+		if moveTop {
+			vectorY -= p.Speed / math.Sqrt2
+		}
+		if moveBot {
+			vectorY += p.Speed / math.Sqrt2
+		}
+		if moveLeft {
+			vectorX -= p.Speed / math.Sqrt2
+		}
+		if moveRight {
+			vectorX += p.Speed / math.Sqrt2
+		}
+	}
+
+	return vectorX, vectorY
 }
 
 func (p *Player) GetSpeed() *float64 {

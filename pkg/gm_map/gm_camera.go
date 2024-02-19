@@ -1,7 +1,6 @@
 package gm_map
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -66,7 +65,6 @@ func (c *Camera) GetPointArea(x, y float64) CameraArea {
 	if _, _, isInCamera = c.GetRelativeCoords(x, y); !isInCamera {
 		return NoneCameraArea
 	}
-	fmt.Printf("x %f, y %f\n", relX, relY)
 
 	// Top Left corner
 	if relX >= 0 && relX <= CameraBorderSize &&

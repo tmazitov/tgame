@@ -3,6 +3,7 @@ package maps
 import (
 	"log"
 
+	"github.com/tmazitov/tgame.git/internal/prefabs"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
 	stgs "github.com/tmazitov/tgame.git/settings"
@@ -17,11 +18,13 @@ func MainMap() (*gm_map.Map, error) {
 		grassRawPath    string = "maps/map1/ground_2"
 		roadsImagePath  string = "assets/textures/tilesets/plains.png"
 		roadsRawPath    string = "maps/map1/ground_3"
+		objsImagePath   string = "assets/textures/objects/objects.png"
 		m               *gm_map.Map
 		grass           *gm_layer.Layer
 		roads           *gm_layer.Layer
 		err             error
 		size            int = stgs.TileSize
+		objsImage       *gm_layer.Image
 	)
 
 	m, err = gm_map.NewMap(gm_map.MapOpt{
@@ -41,6 +44,12 @@ func MainMap() (*gm_map.Map, error) {
 
 	m.AddLayer(gm_map.MapGroundLevel, grass)
 	m.AddLayer(gm_map.MapGroundLevel, roads)
+
+	if objsImage, err = gm_layer.NewImageByPath(objsImagePath); err != nil {
+		return nil, err
+	}
+
+	m.AddObj(prefabs.NewTree(100, 100, objsImage.Rect(0, 80, 64, 48)))
 
 	if stgs.IsDebug {
 		log.Println("MainMap create\t\tsuccess")
