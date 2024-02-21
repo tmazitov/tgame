@@ -1,9 +1,8 @@
 package gm_inventory
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
@@ -12,6 +11,8 @@ type InventoryOpt struct {
 	Width         int
 	SlotImagePath string
 	SlotImageSize int
+	X             float64
+	Y             float64
 }
 
 type Inventory struct {
@@ -20,7 +21,10 @@ type Inventory struct {
 	Width         int
 	IsVisible     bool
 	slotImage     *gm_layer.Image
+	replaceTouch  *Touch
 	slotImageSize int
+	x             float64
+	y             float64
 }
 
 func NewInventory(opt InventoryOpt) (*Inventory, error) {
@@ -61,6 +65,8 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 		slotImage:     image,
 		IsVisible:     false,
 		slotImageSize: opt.SlotImageSize,
+		x:             opt.X,
+		y:             opt.Y,
 	}, nil
 }
 
@@ -76,7 +82,7 @@ func (i *Inventory) findFreeSlot() *Slot {
 	return nil
 }
 
-func (i *Inventory) PutItemToFreeSlot(item IItem) bool {
+func (i *Inventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 
 	var freeSlot *Slot
 
@@ -89,7 +95,7 @@ func (i *Inventory) PutItemToFreeSlot(item IItem) bool {
 	return true
 }
 
-func (i *Inventory) PutItem(item IItem, x, y int) bool {
+func (i *Inventory) PutItem(item *gm_item.Item, x, y uint) bool {
 	if !i.slots[y][x].IsFree() {
 		return false
 	}
@@ -99,7 +105,35 @@ func (i *Inventory) PutItem(item IItem, x, y int) bool {
 	return true
 }
 
-func (i *Inventory) Draw(x, y float64, screen *ebiten.Image) {
+func (i *Inventory) CheckTouchOnSlot(touch *Touch) (*Slot, float64, float64) {
+	var (
+		slot                 *Slot
+		slotX                float64
+		slotY                float64
+		slotSize             float64
+		touchX, touchY       float64
+		touchXint, touchYint int
+	)
+
+	slotSize = float64(i.slotImageSize)
+	touchXint, touchYint = touch.Position()
+	touchX = float64(touchXint)
+	touchY = float64(touchYint)
+	for row := 0; row < i.Height; row++ {
+		for column := 0; column < i.Width; column++ {
+			slot = i.slots[row][column]
+			slotX = i.x + float64(column*i.slotImageSize)
+			slotY = i.y + float64(row*i.slotImageSize)
+			if touchX >= slotX && touchX <= slotX+slotSize &&
+				touchY >= slotY && touchY <= slotY+slotSize {
+				return slot, touchX - slotX, touchY - slotY
+			}
+		}
+	}
+	return nil, 0, 0
+}
+
+func (i *Inventory) Draw(screen *ebiten.Image) {
 
 	var (
 		slot  *Slot
@@ -110,10 +144,13 @@ func (i *Inventory) Draw(x, y float64, screen *ebiten.Image) {
 	for row := 0; row < i.Height; row++ {
 		for column := 0; column < i.Width; column++ {
 			slot = i.slots[row][column]
-			slotX = x + float64(column*i.slotImageSize)
-			slotY = y + float64(row*i.slotImageSize)
+			slotX = i.x + float64(column*i.slotImageSize)
+			slotY = i.y + float64(row*i.slotImageSize)
 			slot.Draw(slotX, slotY, screen)
-			fmt.Printf("slot %f %f \n", slotX, slotY)
 		}
+	}
+
+	if i.replaceTouch != nil {
+		i.replaceTouch.draggingItem.Draw(screen)
 	}
 }

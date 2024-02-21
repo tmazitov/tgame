@@ -15,6 +15,7 @@ type Player interface {
 	Draw(screen *ebiten.Image)
 	StaffHandler(keys []ebiten.Key)
 	AttackHandler(keys []ebiten.Key)
+	MouseHandler(touches []ebiten.TouchID)
 	MovementHandler(keys []ebiten.Key, stay bool)
 	GetSpeed() *float64
 	GetMoveVector(keys []ebiten.Key) (float64, float64)

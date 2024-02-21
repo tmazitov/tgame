@@ -3,13 +3,12 @@ package player
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
 
 type PlayerInventory struct {
 	inventory       *gm_inventory.Inventory
-	x               float64
 	pressedKeyIndex int
-	y               float64
 }
 
 func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
@@ -24,6 +23,8 @@ func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
 		Width:         6,
 		SlotImagePath: "assets/textures/inventory_slot_3.png",
 		SlotImageSize: 33,
+		X:             x,
+		Y:             y,
 	}); err != nil {
 		return nil, err
 	}
@@ -31,8 +32,6 @@ func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
 	return &PlayerInventory{
 		inventory:       inventory,
 		pressedKeyIndex: -1,
-		x:               x,
-		y:               y,
 	}, nil
 }
 
@@ -55,12 +54,27 @@ func (pi *PlayerInventory) HandleToggle(keys []ebiten.Key) {
 	}
 }
 
+func (pi *PlayerInventory) HandleDragAndDrop(touches []ebiten.TouchID) {
+	if !pi.inventory.IsVisible {
+		return
+	}
+	pi.inventory.HandleDragAndDrop(touches)
+}
+
 func (pi *PlayerInventory) SetVisible(visible bool) {
 	pi.inventory.IsVisible = visible
 }
 
 func (pi *PlayerInventory) Draw(screen *ebiten.Image) {
 	if pi.inventory.IsVisible {
-		pi.inventory.Draw(pi.x, pi.y, screen)
+		pi.inventory.Draw(screen)
 	}
+}
+
+func (pi *PlayerInventory) PutItemToFreeSlot(item *gm_item.Item) {
+	pi.inventory.PutItemToFreeSlot(item)
+}
+
+func (pi *PlayerInventory) PutItem(item *gm_item.Item, x, y uint) {
+	pi.inventory.PutItem(item, x, y)
 }

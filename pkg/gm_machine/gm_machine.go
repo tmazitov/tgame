@@ -14,6 +14,7 @@ type GameMachine struct {
 	maps       []*gm_map.Map
 	sprites    []int
 	keys       []ebiten.Key
+	touches    []ebiten.TouchID
 	player     gm_entity.Player
 }
 
@@ -25,6 +26,7 @@ func NewGameMachine(title string) *GameMachine {
 		sprites:    []int{},
 		player:     nil,
 		keys:       []ebiten.Key{},
+		touches:    []ebiten.TouchID{},
 	}
 }
 
@@ -43,7 +45,7 @@ func (g *GameMachine) Update() error {
 	}
 
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
-
+	g.touches = inpututil.AppendJustPressedTouchIDs(g.touches[:0])
 	m = g.maps[g.currentMap]
 
 	if m.PlayerMayMove(g.keys) {
@@ -55,6 +57,7 @@ func (g *GameMachine) Update() error {
 		}
 		g.player.MovementHandler(g.keys, cameraIsMoved)
 	}
+	g.player.MouseHandler(g.touches)
 	g.player.StaffHandler(g.keys)
 	g.player.AttackHandler(g.keys)
 	return nil

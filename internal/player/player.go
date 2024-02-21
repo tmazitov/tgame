@@ -78,7 +78,7 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 	var item *gm_item.Item
 
 	item, err = gm_item.NewItem(0, "Stick", "assets/textures/stick_2.png", gm_item.ItemOptions{
-		MaxStackSize: 1,
+		MaxStackSize: 8,
 		X:            0,
 		Y:            0,
 	})
@@ -86,8 +86,9 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		return nil, err
 	}
 
-	pl.inventory.inventory.PutItemToFreeSlot(item)
-
+	pl.inventory.PutItemToFreeSlot(item)
+	pl.inventory.PutItem(item.Clone(2), 1, 1)
+	pl.inventory.PutItem(item.Clone(3), 2, 0)
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
 	}
