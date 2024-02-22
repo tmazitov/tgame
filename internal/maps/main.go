@@ -45,7 +45,7 @@ func MainMap() (*gm_map.Map, error) {
 	m.AddLayer(gm_map.MapGroundLevel, grass)
 	m.AddLayer(gm_map.MapGroundLevel, roads)
 
-	if objsImage, err = gm_layer.NewImageByPath(objsImagePath); err != nil {
+	if objsImage, err = gm_layer.NewImageByPath(objsImagePath, 16); err != nil {
 		return nil, err
 	}
 

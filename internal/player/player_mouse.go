@@ -5,5 +5,6 @@ import (
 )
 
 func (p *Player) MouseHandler(touches []ebiten.TouchID) {
+	p.inventory.HandleHoverSlot()
 	p.inventory.HandleDragAndDrop(touches)
 }

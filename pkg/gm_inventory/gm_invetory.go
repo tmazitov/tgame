@@ -10,21 +10,22 @@ type InventoryOpt struct {
 	Height        int
 	Width         int
 	SlotImagePath string
-	SlotImageSize int
+	SlotSize      int
 	X             float64
 	Y             float64
 }
 
 type Inventory struct {
-	slots         [][]*Slot
-	Height        int
-	Width         int
-	IsVisible     bool
-	slotImage     *gm_layer.Image
-	replaceTouch  *Touch
-	slotImageSize int
-	x             float64
-	y             float64
+	slots        [][]*Slot
+	Height       int
+	Width        int
+	IsVisible    bool
+	slotImage    *gm_layer.Image
+	replaceTouch *Touch
+	hoveredSlot  *Slot
+	slotSize     int
+	x            float64
+	y            float64
 }
 
 func NewInventory(opt InventoryOpt) (*Inventory, error) {
@@ -37,7 +38,7 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 		return nil, ErrSlotImagePathEmpty
 	}
 
-	if opt.SlotImageSize == 0 {
+	if opt.SlotSize == 0 {
 		return nil, ErrSlotImageSizeZero
 	}
 
@@ -47,7 +48,7 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 		err   error
 	)
 
-	if image, err = gm_layer.NewImageByPath(opt.SlotImagePath); err != nil {
+	if image, err = gm_layer.NewImageByPath(opt.SlotImagePath, opt.SlotSize); err != nil {
 		return nil, err
 	}
 
@@ -59,14 +60,15 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 	}
 
 	return &Inventory{
-		slots:         slots,
-		Height:        opt.Height,
-		Width:         opt.Width,
-		slotImage:     image,
-		IsVisible:     false,
-		slotImageSize: opt.SlotImageSize,
-		x:             opt.X,
-		y:             opt.Y,
+		slots:       slots,
+		Height:      opt.Height,
+		Width:       opt.Width,
+		slotImage:   image,
+		IsVisible:   false,
+		slotSize:    opt.SlotSize,
+		hoveredSlot: nil,
+		x:           opt.X,
+		y:           opt.Y,
 	}, nil
 }
 
@@ -105,25 +107,23 @@ func (i *Inventory) PutItem(item *gm_item.Item, x, y uint) bool {
 	return true
 }
 
-func (i *Inventory) CheckTouchOnSlot(touch *Touch) (*Slot, float64, float64) {
+func (i *Inventory) CheckTouchOnSlot(cursorX, cursorY int) (*Slot, float64, float64) {
 	var (
-		slot                 *Slot
-		slotX                float64
-		slotY                float64
-		slotSize             float64
-		touchX, touchY       float64
-		touchXint, touchYint int
+		slot           *Slot
+		slotX          float64
+		slotY          float64
+		slotSize       float64
+		touchX, touchY float64
 	)
 
-	slotSize = float64(i.slotImageSize)
-	touchXint, touchYint = touch.Position()
-	touchX = float64(touchXint)
-	touchY = float64(touchYint)
+	slotSize = float64(i.slotSize)
+	touchX = float64(cursorX)
+	touchY = float64(cursorY)
 	for row := 0; row < i.Height; row++ {
 		for column := 0; column < i.Width; column++ {
 			slot = i.slots[row][column]
-			slotX = i.x + float64(column*i.slotImageSize)
-			slotY = i.y + float64(row*i.slotImageSize)
+			slotX = i.x + float64(column*i.slotSize)
+			slotY = i.y + float64(row*i.slotSize)
 			if touchX >= slotX && touchX <= slotX+slotSize &&
 				touchY >= slotY && touchY <= slotY+slotSize {
 				return slot, touchX - slotX, touchY - slotY
@@ -141,16 +141,23 @@ func (i *Inventory) Draw(screen *ebiten.Image) {
 		slotY float64
 	)
 
+	// Draw all slots with inside items
 	for row := 0; row < i.Height; row++ {
 		for column := 0; column < i.Width; column++ {
 			slot = i.slots[row][column]
-			slotX = i.x + float64(column*i.slotImageSize)
-			slotY = i.y + float64(row*i.slotImageSize)
+			slotX = i.x + float64(column*i.slotSize)
+			slotY = i.y + float64(row*i.slotSize)
 			slot.Draw(slotX, slotY, screen)
 		}
 	}
 
+	// Draw dragging item
 	if i.replaceTouch != nil {
 		i.replaceTouch.draggingItem.Draw(screen)
+	}
+
+	// Draw item description
+	if i.replaceTouch == nil && i.hoveredSlot != nil && i.hoveredSlot.Item != nil {
+		i.hoveredSlot.Item.DrawDescription(screen)
 	}
 }

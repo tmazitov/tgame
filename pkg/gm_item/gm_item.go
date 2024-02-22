@@ -11,6 +11,7 @@ type Item struct {
 	MaxStackSize uint
 	Amount       uint
 	image        *gm_layer.Image
+	description  *ItemDescription
 	x            float64
 	y            float64
 	isMoving     bool
@@ -19,6 +20,7 @@ type Item struct {
 type ItemOptions struct {
 	MaxStackSize uint
 	Amount       uint
+	TileSize     int
 	X            float64
 	Y            float64
 }
@@ -34,7 +36,7 @@ func NewItem(id uint, name string, imagePath string, opt ItemOptions) (*Item, er
 		return nil, ErrInvalidParams
 	}
 
-	if image, err = gm_layer.NewImageByPath(imagePath); err != nil {
+	if image, err = gm_layer.NewImageByPath(imagePath, opt.TileSize); err != nil {
 		return nil, err
 	}
 	if opt.Amount == 0 {
@@ -50,7 +52,16 @@ func NewItem(id uint, name string, imagePath string, opt ItemOptions) (*Item, er
 		y:            opt.Y,
 		isMoving:     false,
 		Amount:       opt.Amount,
+		description:  nil,
 	}, nil
+}
+
+func (i *Item) SetupDescription(source *gm_layer.Image, opt ItemDescriptionOpt) error {
+	var err error
+	if i.description, err = NewItemDescription(i.Name, source, opt); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (i *Item) Clone(amount uint) *Item {
@@ -68,6 +79,7 @@ func (i *Item) Clone(amount uint) *Item {
 		x:            i.x,
 		y:            i.y,
 		isMoving:     false,
+		description:  i.description,
 	}
 }
 
@@ -108,4 +120,10 @@ func (i *Item) GetAmount() uint {
 
 func (i *Item) SetAmount(value uint) {
 	i.Amount = value
+}
+
+func (i *Item) DrawDescription(screen *ebiten.Image) {
+	if i.description != nil {
+		i.description.Draw(i.x, i.y+float64(i.image.Height()), screen)
+	}
 }

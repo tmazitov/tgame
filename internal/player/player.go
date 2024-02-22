@@ -55,11 +55,11 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		coll:        nil,
 	}
 
-	if pl.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles); err != nil {
+	if pl.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles, stgs.TileSize); err != nil {
 		return nil, err
 	}
 
-	if pl.images.Shadow, err = gm_layer.NewImageByPath(imagesPaths.Shadow); err != nil {
+	if pl.images.Shadow, err = gm_layer.NewImageByPath(imagesPaths.Shadow, stgs.TileSize); err != nil {
 		return nil, err
 	}
 
@@ -81,8 +81,22 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		MaxStackSize: 8,
 		X:            0,
 		Y:            0,
+		TileSize:     stgs.ItemSize,
 	})
 	if err != nil {
+		return nil, err
+	}
+
+	var descriptionImage *gm_layer.Image
+	if descriptionImage, err = gm_layer.NewImageByPath("assets/textures/description_5.png", stgs.TileSize); err != nil {
+		return nil, err
+	}
+
+	if err = item.SetupDescription(descriptionImage, gm_item.ItemDescriptionOpt{
+		Width:       4,
+		Height:      4,
+		TextPadding: 8,
+	}); err != nil {
 		return nil, err
 	}
 

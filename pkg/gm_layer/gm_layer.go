@@ -26,8 +26,7 @@ func NewLayer(name string, rawPath string, imagePath string, tileSize int) (*Lay
 		err   error
 	)
 
-	image, err = NewImageByPath(imagePath)
-	if err != nil {
+	if image, err = NewImageByPath(imagePath, tileSize); err != nil {
 		return nil, err
 	}
 
@@ -51,8 +50,7 @@ func NewLayerByRaw(name string, raw *Raw, imagePath string, tileSize int) (*Laye
 		err   error
 	)
 
-	image, err = NewImageByPath(imagePath)
-	if err != nil {
+	if image, err = NewImageByPath(imagePath, tileSize); err != nil {
 		return nil, err
 	}
 

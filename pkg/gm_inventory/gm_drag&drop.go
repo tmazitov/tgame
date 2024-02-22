@@ -25,7 +25,7 @@ func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) {
 
 	// Check if touch is released
 	if i.replaceTouch.IsReleased() {
-		touchedSlot, _, _ = i.CheckTouchOnSlot(i.replaceTouch)
+		touchedSlot, _, _ = i.CheckTouchOnSlot(i.replaceTouch.Position())
 		if i.putItemIsPossible(i.replaceTouch.draggingItem, touchedSlot) {
 			i.putItem(i.replaceTouch, touchedSlot)
 		} else {
@@ -46,7 +46,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 	// Mouse click right
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
 		touch = NewMouseTouch(ebiten.MouseButtonRight)
-		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
+		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch.Position())
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY
 			return i.takeHalfItem(touch, touchedSlot)
@@ -56,7 +56,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 	// Mouse click left
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		touch = NewMouseTouch(ebiten.MouseButtonLeft)
-		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
+		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch.Position())
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY
 			return i.takeItem(touch, touchedSlot)
@@ -66,7 +66,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 	// Touch
 	for _, id := range touches {
 		touch = NewOriginTouch(id)
-		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
+		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch.Position())
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY
 			return i.takeItem(touch, touchedSlot)

@@ -22,7 +22,7 @@ func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
 		Height:        4,
 		Width:         6,
 		SlotImagePath: "assets/textures/inventory_slot_3.png",
-		SlotImageSize: 33,
+		SlotSize:      33,
 		X:             x,
 		Y:             y,
 	}); err != nil {
@@ -59,6 +59,13 @@ func (pi *PlayerInventory) HandleDragAndDrop(touches []ebiten.TouchID) {
 		return
 	}
 	pi.inventory.HandleDragAndDrop(touches)
+}
+
+func (pi *PlayerInventory) HandleHoverSlot() {
+	if !pi.inventory.IsVisible {
+		return
+	}
+	pi.inventory.HandleHoverSlot()
 }
 
 func (pi *PlayerInventory) SetVisible(visible bool) {
