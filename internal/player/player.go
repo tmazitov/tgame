@@ -88,7 +88,7 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 	}
 
 	var descriptionImage *gm_layer.Image
-	if descriptionImage, err = gm_layer.NewImageByPath("assets/textures/description_5.png", stgs.TileSize); err != nil {
+	if descriptionImage, err = gm_layer.NewImageByPath("assets/textures/description_7.png", stgs.TileSize); err != nil {
 		return nil, err
 	}
 
