@@ -10,14 +10,16 @@ type TouchSource interface {
 	IsJustReleased() bool
 }
 
-type MouseTouchSource struct{}
+type MouseTouchSource struct {
+	ID ebiten.MouseButton
+}
 
 func (m *MouseTouchSource) Position() (int, int) {
 	return ebiten.CursorPosition()
 }
 
 func (m *MouseTouchSource) IsJustReleased() bool {
-	return inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft)
+	return inpututil.IsMouseButtonJustReleased(m.ID)
 }
 
 type OriginTouchSource struct {

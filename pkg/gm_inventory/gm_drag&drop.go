@@ -45,7 +45,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 
 	// Mouse click right
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		touch = NewTouch(&MouseTouchSource{})
+		touch = NewMouseTouch(ebiten.MouseButtonRight)
 		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY
@@ -55,7 +55,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 
 	// Mouse click left
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		touch = NewTouch(&MouseTouchSource{})
+		touch = NewMouseTouch(ebiten.MouseButtonLeft)
 		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY
@@ -65,7 +65,7 @@ func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {
 
 	// Touch
 	for _, id := range touches {
-		touch = NewTouch(&OriginTouchSource{id})
+		touch = NewOriginTouch(id)
 		touchedSlot, relX, relY = i.CheckTouchOnSlot(touch)
 		if touchedSlot != nil && !touchedSlot.IsFree() {
 			touch.relX, touch.relY = relX, relY

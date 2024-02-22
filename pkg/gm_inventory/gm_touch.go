@@ -1,6 +1,9 @@
 package gm_inventory
 
-import "github.com/tmazitov/tgame.git/pkg/gm_item"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
+)
 
 type Touch struct {
 	initX    int
@@ -34,6 +37,14 @@ func NewTouch(source TouchSource) *Touch {
 		source:   source,
 		released: false,
 	}
+}
+
+func NewMouseTouch(mouseButton ebiten.MouseButton) *Touch {
+	return NewTouch(&MouseTouchSource{ID: mouseButton})
+}
+
+func NewOriginTouch(touchID ebiten.TouchID) *Touch {
+	return NewTouch(&OriginTouchSource{ID: touchID})
 }
 
 func (t *Touch) Update() {
