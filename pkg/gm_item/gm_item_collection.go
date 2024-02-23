@@ -75,7 +75,7 @@ func (c *ItemCollection) FillByJson(path string) error {
 	}
 
 	for _, itemRaw := range itemsRaw {
-		item, err = itemRaw.ToItem()
+		item, err = itemRaw.ToItem(c.descriptionSource)
 		if err != nil {
 			return err
 		}
