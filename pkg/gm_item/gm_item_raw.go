@@ -3,12 +3,14 @@ package gm_item
 import "github.com/tmazitov/tgame.git/pkg/gm_layer"
 
 type ItemRaw struct {
-	Id          uint               `json:"id"`
-	Name        string             `json:"name"`
-	ImagePath   string             `json:"imagePath"`
-	ImageSize   int                `json:"imageSize"`
-	MaxStack    uint               `json:"maxStack"`
-	Description ItemDescriptionRaw `json:"description"`
+	Id             uint               `json:"id"`
+	Name           string             `json:"name"`
+	ImagePath      string             `json:"imagePath"`
+	SmallImagePath string             `json:"smallImagePath"`
+	ImageSize      int                `json:"imageSize"`
+	SmallImageSize int                `json:"smallImageSize"`
+	MaxStack       uint               `json:"maxStack"`
+	Description    ItemDescriptionRaw `json:"description"`
 }
 
 type ItemDescriptionRaw struct {
@@ -24,10 +26,13 @@ func (ir *ItemRaw) ToItem(descriptionSourceImage *gm_layer.Image) (*Item, error)
 		err  error
 	)
 
-	item, err = NewItem(ir.Id, ir.Name, ir.ImagePath, ItemOptions{
-		MaxStackSize: ir.MaxStack,
-		Amount:       1,
-		TileSize:     ir.ImageSize,
+	item, err = NewItem(ir.Id, ir.Name, ItemOptions{
+		MaxStackSize:   ir.MaxStack,
+		Amount:         1,
+		ImageSize:      ir.ImageSize,
+		ImagePath:      ir.ImagePath,
+		SmallImagePath: ir.SmallImagePath,
+		SmallImageSize: ir.SmallImageSize,
 	})
 
 	if err != nil {

@@ -78,8 +78,8 @@ func (pi *PlayerInventory) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (pi *PlayerInventory) PutItemToFreeSlot(item *gm_item.Item) {
-	pi.inventory.PutItemToFreeSlot(item)
+func (pi *PlayerInventory) PutItemToFreeSlot(item *gm_item.Item) bool {
+	return pi.inventory.PutItemToFreeSlot(item)
 }
 
 func (pi *PlayerInventory) PutItem(item *gm_item.Item, x, y uint) {

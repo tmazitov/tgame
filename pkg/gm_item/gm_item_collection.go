@@ -91,7 +91,7 @@ func (c *ItemCollection) AddItem(id uint, name string, imagePath string, iOpt It
 		err  error
 	)
 
-	if item, err = NewItem(id, name, imagePath, iOpt); err != nil {
+	if item, err = NewItem(id, name, iOpt); err != nil {
 		return err
 	}
 	if err = item.SetupDescription(c.descriptionSource, dOpt); err != nil {

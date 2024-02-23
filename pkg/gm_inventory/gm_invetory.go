@@ -134,7 +134,7 @@ func (i *Inventory) PutItem(item *gm_item.Item, x, y uint) bool {
 	if !i.slots[y][x].IsFree() {
 		return false
 	}
-
+	item.IsDropped = false
 	i.slots[y][x].SetItem(item)
 
 	return true
@@ -207,7 +207,7 @@ func (i *Inventory) Draw(screen *ebiten.Image) {
 
 	// Draw dragging item
 	if i.replaceTouch != nil {
-		i.replaceTouch.draggingItem.Draw(screen)
+		i.replaceTouch.draggingItem.Draw(screen, nil)
 	}
 
 	// Draw item description

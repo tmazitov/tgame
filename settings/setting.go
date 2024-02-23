@@ -22,3 +22,4 @@ const FireballSpeed = 2.5
 // ITEM SETTINGS
 
 const ItemSize = 32
+const ItemCollectionDistance = 10

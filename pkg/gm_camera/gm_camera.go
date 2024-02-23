@@ -1,4 +1,4 @@
-package gm_map
+package gm_camera
 
 import (
 	"math"

@@ -4,11 +4,8 @@ go 1.18
 
 require github.com/hajimehoshi/ebiten/v2 v2.6.4
 
-require golang.org/x/text v0.14.0 // indirect
-
 require (
 	github.com/ebitengine/purego v0.5.0 // indirect
-	github.com/hajimehoshi/ebiten v1.12.12
 	github.com/jezek/xgb v1.1.0 // indirect
 	golang.org/x/exp/shiny v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/image v0.15.0 // indirect

@@ -3,6 +3,7 @@ package gm_machine
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
@@ -37,9 +38,10 @@ func (g *GameMachine) Update() error {
 
 	var (
 		m                *gm_map.Map
-		area             gm_map.CameraArea
+		area             gm_camera.CameraArea
 		playerX, playerY float64
 		cameraIsMoved    bool = false
+		collectedItems   []*gm_item.Item
 		err              error
 	)
 
@@ -63,6 +65,10 @@ func (g *GameMachine) Update() error {
 	g.player.MouseHandler(g.touches)
 	g.player.StaffHandler(g.keys)
 	g.player.AttackHandler(g.keys)
+	collectedItems = g.player.CollectItemsHandler(g.maps[g.currentMap].GetDropItems())
+	for _, item := range collectedItems {
+		g.maps[g.currentMap].DelDropItem(item)
+	}
 	return nil
 }
 

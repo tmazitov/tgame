@@ -45,7 +45,7 @@ func (s *Slot) Draw(x, y float64, screen *ebiten.Image) {
 		if itemX != x && itemY != y {
 			s.Item.SetPosition(x, y)
 		}
-		s.Item.Draw(screen)
+		s.Item.Draw(screen, nil)
 		if s.Item.GetAmount() != 1 {
 			size := s.image.Inst.Bounds().Dx()
 			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", s.Item.GetAmount()), int(x)+size-11, int(y)+size-17)

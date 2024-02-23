@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
 
 type GameEntity interface {
@@ -17,6 +18,7 @@ type Player interface {
 	AttackHandler(keys []ebiten.Key)
 	MouseHandler(touches []ebiten.TouchID)
 	MovementHandler(keys []ebiten.Key, stay bool)
+	CollectItemsHandler(items []*gm_item.Item) []*gm_item.Item
 	GetSpeed() *float64
 	GetMoveVector(keys []ebiten.Key) (float64, float64)
 	GetCollider() *gm_geometry.Collider

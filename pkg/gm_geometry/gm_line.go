@@ -1,5 +1,7 @@
 package gm_geometry
 
+import "math"
+
 type Line struct {
 	Start *Point
 	End   *Point
@@ -69,4 +71,8 @@ func (l *Line) IsIntersectWithVector(line *Line, x, y float64) bool {
 	var ua float64 = numA / denom
 	var ub float64 = numB / denom
 	return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1
+}
+
+func Length(p1 Point, p2 Point) float64 {
+	return math.Sqrt(math.Pow(p2.X-p1.X, 2) + math.Pow(p2.Y-p1.Y, 2))
 }

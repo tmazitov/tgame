@@ -2,8 +2,8 @@ package prefabs
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
-	"github.com/tmazitov/tgame.git/pkg/gm_map"
 )
 
 type Tree struct {
@@ -49,7 +49,7 @@ func (t *Tree) GetCollider() *gm_geometry.Collider {
 	return t.coll
 }
 
-func (t *Tree) Draw(screen *ebiten.Image, camera *gm_map.Camera) {
+func (t *Tree) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 
 	var (
 		relativeX  float64

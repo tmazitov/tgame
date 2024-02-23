@@ -2,19 +2,22 @@ package gm_map
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
 type Map struct {
-	ground   *Ground
-	player   gm_entity.Player
-	entities []gm_entity.GameEntity
-	objs     []IMapObj
-	width    int
-	height   int
-	tileSize int
-	camera   *Camera
+	ground       *Ground
+	player       gm_entity.Player
+	entities     []gm_entity.GameEntity
+	objs         []IMapObj
+	width        int
+	height       int
+	tileSize     int
+	camera       *gm_camera.Camera
+	droppedItems []*gm_item.Item
 }
 
 type MapOpt struct {
@@ -46,14 +49,15 @@ func NewMap(opt MapOpt) (*Map, error) {
 	height, width = background.GetSizes()
 
 	return &Map{
-		ground:   NewGround(background),
-		width:    width,
-		height:   height,
-		player:   nil,
-		tileSize: opt.TileSize,
-		objs:     []IMapObj{},
-		entities: []gm_entity.GameEntity{},
-		camera:   nil,
+		ground:       NewGround(background),
+		width:        width,
+		height:       height,
+		player:       nil,
+		tileSize:     opt.TileSize,
+		objs:         []IMapObj{},
+		entities:     []gm_entity.GameEntity{},
+		droppedItems: []*gm_item.Item{},
+		camera:       nil,
 	}, nil
 }
 
@@ -70,7 +74,7 @@ func (m *Map) AddObj(obj IMapObj) {
 	m.objs = append(m.objs, obj)
 }
 
-func (m *Map) AddCamera(camera *Camera) {
+func (m *Map) AddCamera(camera *gm_camera.Camera) {
 	if camera == nil {
 		return
 	}
@@ -92,7 +96,7 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 	}
 }
 
-func (m *Map) MoveCamera(keys []ebiten.Key, area CameraArea) (bool, error) {
+func (m *Map) MoveCamera(keys []ebiten.Key, area gm_camera.CameraArea) (bool, error) {
 	return m.camera.MovementHandler(keys, area)
 }
 
@@ -111,8 +115,27 @@ func (m *Map) PlayerMayMove(keys []ebiten.Key) bool {
 	return true
 }
 
-func (m *Map) GetCameraArea(x, y float64) CameraArea {
+func (m *Map) GetCameraArea(x, y float64) gm_camera.CameraArea {
 	return m.camera.GetPointArea(x, y)
+}
+
+func (m *Map) AddDropItem(item *gm_item.Item, x, y float64) {
+	item.SetPosition(x, y)
+	m.droppedItems = append(m.droppedItems, item)
+}
+
+func (m *Map) GetDropItems() []*gm_item.Item {
+	return m.droppedItems
+}
+
+func (m *Map) DelDropItem(item *gm_item.Item) {
+	for i, droppedItem := range m.droppedItems {
+		if droppedItem == item {
+			// Remove the item from the array
+			m.droppedItems = append(m.droppedItems[:i], m.droppedItems[i+1:]...)
+			break
+		}
+	}
 }
 
 func (m *Map) Draw(screen *ebiten.Image) {
@@ -126,9 +149,9 @@ func (m *Map) Draw(screen *ebiten.Image) {
 
 	m.ground.Draw(screen, border)
 
-	// for _, layer := range g.layers {
-	// 	layer.Draw(screen)
-	// }
+	for _, item := range m.droppedItems {
+		item.Draw(screen, m.camera)
+	}
 
 	for _, entity := range m.entities {
 		entity.Draw(screen)

@@ -2,6 +2,7 @@ package gm_item
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
@@ -11,34 +12,44 @@ type Item struct {
 	MaxStackSize uint
 	Amount       uint
 	image        *gm_layer.Image
+	smallImage   *gm_layer.Image
 	description  *ItemDescription
-	x            float64
-	y            float64
+	X            float64
+	Y            float64
 	isMoving     bool
+	IsDropped    bool
 }
 
 type ItemOptions struct {
-	MaxStackSize uint
-	Amount       uint
-	TileSize     int
-	X            float64
-	Y            float64
+	ImagePath      string
+	ImageSize      int
+	SmallImagePath string
+	SmallImageSize int
+	MaxStackSize   uint
+	Amount         uint
+	X              float64
+	Y              float64
 }
 
-func NewItem(id uint, name string, imagePath string, opt ItemOptions) (*Item, error) {
+func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 
 	var (
-		image *gm_layer.Image
-		err   error
+		image      *gm_layer.Image
+		smallImage *gm_layer.Image
+		err        error
 	)
 
-	if imagePath == "" || name == "" {
+	if opt.ImagePath == "" || name == "" || opt.SmallImagePath == "" {
 		return nil, ErrInvalidParams
 	}
 
-	if image, err = gm_layer.NewImageByPath(imagePath, opt.TileSize); err != nil {
+	if image, err = gm_layer.NewImageByPath(opt.ImagePath, opt.ImageSize); err != nil {
 		return nil, err
 	}
+	if smallImage, err = gm_layer.NewImageByPath(opt.SmallImagePath, opt.SmallImageSize); err != nil {
+		return nil, err
+	}
+
 	if opt.Amount == 0 {
 		opt.Amount = 1
 	}
@@ -48,9 +59,11 @@ func NewItem(id uint, name string, imagePath string, opt ItemOptions) (*Item, er
 		Name:         name,
 		MaxStackSize: opt.MaxStackSize,
 		image:        image,
-		x:            opt.X,
-		y:            opt.Y,
+		smallImage:   smallImage,
+		X:            opt.X,
+		Y:            opt.Y,
 		isMoving:     false,
+		IsDropped:    true,
 		Amount:       opt.Amount,
 		description:  nil,
 	}, nil
@@ -76,17 +89,36 @@ func (i *Item) Clone(amount uint) *Item {
 		MaxStackSize: i.MaxStackSize,
 		Amount:       amount,
 		image:        i.image,
-		x:            i.x,
-		y:            i.y,
+		X:            i.X,
+		Y:            i.Y,
 		isMoving:     false,
+		smallImage:   i.smallImage,
+		IsDropped:    i.IsDropped,
 		description:  i.description,
 	}
 }
 
-func (i *Item) Draw(screen *ebiten.Image) {
+func (i *Item) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
+	var (
+		positionX  float64
+		positionY  float64
+		isInCamera bool
+	)
+
+	if !i.IsDropped || camera == nil {
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(i.X, i.Y)
+		screen.DrawImage(i.image.Inst, op)
+		return
+	}
+
+	positionX, positionY, isInCamera = camera.GetRelativeCoords(i.X, i.Y)
+	if !isInCamera {
+		return
+	}
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(i.x, i.y)
-	screen.DrawImage(i.image.Inst, op)
+	op.GeoM.Translate(positionX, positionY)
+	screen.DrawImage(i.smallImage.Inst, op)
 }
 
 func (i *Item) GetID() uint {
@@ -102,12 +134,12 @@ func (i *Item) SetIsMoving(value bool) {
 }
 
 func (i *Item) SetPosition(x, y float64) {
-	i.x = x
-	i.y = y
+	i.X = x
+	i.Y = y
 }
 
 func (i *Item) GetPosition() (float64, float64) {
-	return i.x, i.y
+	return i.X, i.Y
 }
 
 func (i *Item) GetStackSize() uint {
@@ -124,6 +156,13 @@ func (i *Item) SetAmount(value uint) {
 
 func (i *Item) DrawDescription(screen *ebiten.Image) {
 	if i.description != nil {
-		i.description.Draw(i.x, i.y+float64(i.image.Height()), screen)
+		i.description.Draw(i.X, i.X+float64(i.image.Height()), screen)
 	}
+}
+
+func (i *Item) Size() int {
+	if i.IsDropped {
+		return i.smallImage.Height()
+	}
+	return i.image.Height()
 }

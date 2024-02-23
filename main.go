@@ -20,6 +20,7 @@ import (
 	"github.com/tmazitov/tgame.git/internal/items"
 	"github.com/tmazitov/tgame.git/internal/maps"
 	"github.com/tmazitov/tgame.git/internal/player"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
@@ -58,11 +59,13 @@ func main() {
 		panic(err)
 	}
 
-	m.AddCamera(gm_map.NewCamera(stgs.ScreenHeight, stgs.ScreenWidth))
+	m.AddCamera(gm_camera.NewCamera(stgs.ScreenHeight, stgs.ScreenWidth))
 	game.SetupItemStorage(itemCollectionStorage)
 	game.SetupPlayer(pl)
-	pl.Collect(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5))
-	pl.Collect(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5))
+
+	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5), 70, 25)
+	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(7), 100, 125)
+	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(6), 20, 90)
 	game.AddMap(m)
 	game.Run()
 }
