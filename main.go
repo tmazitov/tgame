@@ -17,8 +17,10 @@ package main
 import (
 	_ "image/png"
 
+	"github.com/tmazitov/tgame.git/internal/items"
 	"github.com/tmazitov/tgame.git/internal/maps"
 	"github.com/tmazitov/tgame.git/internal/player"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
 	stgs "github.com/tmazitov/tgame.git/settings"
@@ -26,9 +28,10 @@ import (
 
 func main() {
 	var (
-		m   *gm_map.Map
-		err error
-		pl  *player.Player
+		m                     *gm_map.Map
+		err                   error
+		pl                    *player.Player
+		itemCollectionStorage *gm_item.ItemCollectionStorage
 	)
 	pl, err = player.NewPlayer(0, 0, player.PlayerImagesPaths{
 		Tiles:  "assets/textures/characters/Humans_Smith.png",
@@ -49,8 +52,17 @@ func main() {
 	if m, err = maps.MainMap(); err != nil {
 		panic(err)
 	}
+
+	itemCollectionStorage, err = gm_item.NewItemCollectionStorage("items/collectionsConfig.json", 32)
+	if err != nil {
+		panic(err)
+	}
+
 	m.AddCamera(gm_map.NewCamera(stgs.ScreenHeight, stgs.ScreenWidth))
-	game.AddPlayer(pl)
+	game.SetupItemStorage(itemCollectionStorage)
+	game.SetupPlayer(pl)
+	pl.Collect(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5))
+	pl.Collect(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5))
 	game.AddMap(m)
 	game.Run()
 }

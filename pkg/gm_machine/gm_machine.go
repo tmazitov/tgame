@@ -4,29 +4,32 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
 type GameMachine struct {
-	title      string
-	currentMap int
-	maps       []*gm_map.Map
-	sprites    []int
-	keys       []ebiten.Key
-	touches    []ebiten.TouchID
-	player     gm_entity.Player
+	title       string
+	currentMap  int
+	maps        []*gm_map.Map
+	sprites     []int
+	keys        []ebiten.Key
+	touches     []ebiten.TouchID
+	player      gm_entity.Player
+	ItemStorage *gm_item.ItemCollectionStorage
 }
 
 func NewGameMachine(title string) *GameMachine {
 	return &GameMachine{
-		title:      title,
-		maps:       []*gm_map.Map{},
-		currentMap: 0,
-		sprites:    []int{},
-		player:     nil,
-		keys:       []ebiten.Key{},
-		touches:    []ebiten.TouchID{},
+		title:       title,
+		maps:        []*gm_map.Map{},
+		currentMap:  0,
+		sprites:     []int{},
+		player:      nil,
+		keys:        []ebiten.Key{},
+		touches:     []ebiten.TouchID{},
+		ItemStorage: nil,
 	}
 }
 
@@ -61,13 +64,6 @@ func (g *GameMachine) Update() error {
 	g.player.StaffHandler(g.keys)
 	g.player.AttackHandler(g.keys)
 	return nil
-}
-
-func (g *GameMachine) AddPlayer(player gm_entity.Player) {
-	if player == nil {
-		return
-	}
-	g.player = player
 }
 
 func (g *GameMachine) AddMap(m *gm_map.Map) {

@@ -8,7 +8,6 @@ import (
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
-	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -75,34 +74,6 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		return nil, err
 	}
 
-	var item *gm_item.Item
-
-	item, err = gm_item.NewItem(0, "Stick", "assets/textures/stick_2.png", gm_item.ItemOptions{
-		MaxStackSize: 8,
-		X:            0,
-		Y:            0,
-		TileSize:     stgs.ItemSize,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	var descriptionImage *gm_layer.Image
-	if descriptionImage, err = gm_layer.NewImageByPath("assets/textures/description_7.png", stgs.TileSize); err != nil {
-		return nil, err
-	}
-
-	if err = item.SetupDescription(descriptionImage, gm_item.ItemDescriptionOpt{
-		Width:       4,
-		Height:      4,
-		TextPadding: 8,
-	}); err != nil {
-		return nil, err
-	}
-
-	pl.inventory.PutItemToFreeSlot(item)
-	pl.inventory.PutItem(item.Clone(2), 1, 1)
-	pl.inventory.PutItem(item.Clone(3), 2, 0)
 	if stgs.IsDebug {
 		log.Println("Player create\t\tsuccess")
 	}

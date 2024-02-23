@@ -1,0 +1,14 @@
+[
+	{
+		"id": 1,
+		"name": "Stick",
+		"imagePath" : "assets/textures/stick.png",
+		"imageSize" : 32,
+		"maxStack" : 8,
+		"description" : {
+			"height" : 2,
+			"width" : 3,
+			"textPadding" : 8
+		}
+	}
+]
