@@ -119,12 +119,13 @@ func (i *Inventory) putItemIsPossible(item *gm_item.Item, destSlot *Slot) bool {
 		destSlotItemAmount    uint = destSlot.Item.GetAmount()
 	)
 
-	return destSlotItemAmount < destSlotItemStackSize
+	return item.Amount+destSlotItemAmount <= destSlotItemStackSize
 }
 
 func (i *Inventory) putItem(touch *Touch, destSlot *Slot) {
 	if destSlot.Item == nil {
 		destSlot.SetItem(touch.draggingItem)
+		touch.draggingItem.SetPosition(i.GetSlotPosition(destSlot))
 	} else if destSlot.Item.GetID() == touch.draggingItem.GetID() {
 		destSlot.Item.SetAmount(destSlot.Item.GetAmount() + touch.draggingItem.GetAmount())
 	}

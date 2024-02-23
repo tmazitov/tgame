@@ -84,9 +84,42 @@ func (i *Inventory) findFreeSlot() *Slot {
 	return nil
 }
 
+func (i *Inventory) findSlotWithSameItem(id uint) *Slot {
+
+	var (
+		slotItem *gm_item.Item
+	)
+
+	for y := 0; y < i.Height; y++ {
+		for x := 0; x < i.Width; x++ {
+			if i.slots[y][x].IsFree() {
+				continue
+			}
+			slotItem = i.slots[y][x].Item
+			if slotItem.ID == id && slotItem.Amount < slotItem.MaxStackSize {
+				return i.slots[y][x]
+			}
+		}
+	}
+	return nil
+}
+
 func (i *Inventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 
 	var freeSlot *Slot
+
+	freeSlot = i.findSlotWithSameItem(item.ID)
+
+	if freeSlot != nil {
+		if freeSlot.Item.Amount+item.Amount <= freeSlot.Item.MaxStackSize {
+			freeSlot.Item.Amount += item.Amount
+			return true
+		} else {
+			difference := freeSlot.Item.MaxStackSize - freeSlot.Item.Amount
+			freeSlot.Item.Amount = freeSlot.Item.MaxStackSize
+			item.Amount -= difference
+		}
+	}
 
 	if freeSlot = i.findFreeSlot(); freeSlot == nil {
 		return false
@@ -131,6 +164,27 @@ func (i *Inventory) CheckTouchOnSlot(cursorX, cursorY int) (*Slot, float64, floa
 		}
 	}
 	return nil, 0, 0
+}
+
+func (i *Inventory) GetSlotPosition(slot *Slot) (float64, float64) {
+
+	var (
+		s     *Slot
+		slotX float64
+		slotY float64
+	)
+
+	for row := 0; row < i.Height; row++ {
+		for column := 0; column < i.Width; column++ {
+			s = i.slots[row][column]
+			slotX = i.x + float64(column*i.slotSize)
+			slotY = i.y + float64(row*i.slotSize)
+			if s == slot {
+				return slotX, slotY
+			}
+		}
+	}
+	return 0, 0
 }
 
 func (i *Inventory) Draw(screen *ebiten.Image) {
