@@ -156,7 +156,7 @@ func (i *Item) SetAmount(value uint) {
 
 func (i *Item) DrawDescription(screen *ebiten.Image) {
 	if i.description != nil {
-		i.description.Draw(i.X, i.X+float64(i.image.Height()), screen)
+		i.description.Draw(i.X, i.Y+float64(i.image.Height()), screen)
 	}
 }
 
