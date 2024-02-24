@@ -14,16 +14,23 @@ func (p *Player) Collect(item *gm_item.Item) bool {
 func (p *Player) CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Camera) []*gm_item.Item {
 
 	var (
-		playerPos gm_geometry.Point = gm_geometry.Point{
-			X: p.X,
-			Y: p.Y,
-		}
+		playerPos      gm_geometry.Point
+		playerRelX     float64
+		playerRelY     float64
+		isInCamera     bool
 		itemPos        gm_geometry.Point
 		collectedItems []*gm_item.Item
 		relX, relY     float64
-		isInCamera     bool
 	)
 
+	playerRelX, playerRelY, isInCamera = camera.GetRelativeCoords(p.X, p.Y)
+	if !isInCamera {
+		return nil
+	}
+	playerPos = gm_geometry.Point{
+		X: playerRelX - float64(p.images.Tiles.TileSize/2),
+		Y: playerRelY - float64(p.images.Tiles.TileSize/2),
+	}
 	for _, item := range items {
 		relX, relY, isInCamera = camera.GetRelativeCoords(item.X, item.Y)
 		// fmt.Printf("relX: %v, relY: %v, isInCamera: %v\n", relX, relY, isInCamera)

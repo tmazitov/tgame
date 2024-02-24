@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
@@ -211,23 +212,29 @@ func FlipVertical(source *ebiten.Image) *ebiten.Image {
 	return result
 }
 
-func (p *Player) drawShadow(screen *ebiten.Image) {
+func (p *Player) drawShadow(screen *ebiten.Image, relativeX, relativeY float64) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(p.X), float64(p.Y))
+	op.GeoM.Translate(relativeX, relativeY)
 	screen.DrawImage(p.images.Shadow.Inst, op)
 }
 
-func (p *Player) Draw(screen *ebiten.Image) {
+func (p *Player) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
+
+	var (
+		relativeX, relativeY float64
+		tile                 *ebiten.Image = p.GetNextTile()
+	)
+
+	relativeX, relativeY, _ = camera.GetRelativeCoords(p.X, p.Y)
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(p.X), float64(p.Y))
-	var tile *ebiten.Image = p.GetNextTile()
+	op.GeoM.Translate(relativeX, relativeY)
 	if p.actionState == Left_PlayerAction || p.lastAction == Left_PlayerAction {
 		tile = FlipVertical(tile)
 	}
 
 	screen.DrawImage(tile, op)
-	p.drawShadow(screen)
+	p.drawShadow(screen, relativeX, relativeY)
 
 	for _, fireball := range p.attack.GetFireballs() {
 		fireball.Move()

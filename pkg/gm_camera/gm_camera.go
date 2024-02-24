@@ -45,24 +45,24 @@ func (c *Camera) GetRelativeCoords(x, y float64) (float64, float64, bool) {
 		isInCamera bool
 	)
 
-	relativeX = x
-	relativeY = y
+	relativeX = x - c.X
+	relativeY = y - c.Y
 	isInCamera = relativeX >= 0 && relativeX <= float64(c.Width) &&
 		relativeY >= 0 && relativeY <= float64(c.Height)
-	return relativeX - c.X, relativeY - c.Y, isInCamera
+	return relativeX, relativeY, isInCamera
 }
 
 func (c *Camera) GetPointArea(x, y float64) CameraArea {
 
 	var (
-		relX       float64 = x
-		relY       float64 = y
+		relX       float64
+		relY       float64
 		width      float64 = float64(c.Width)
 		height     float64 = float64(c.Height)
 		isInCamera bool
 	)
 
-	if _, _, isInCamera = c.GetRelativeCoords(x, y); !isInCamera {
+	if relX, relY, isInCamera = c.GetRelativeCoords(x, y); !isInCamera {
 		return NoneCameraArea
 	}
 

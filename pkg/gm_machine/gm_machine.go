@@ -63,6 +63,7 @@ func (g *GameMachine) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func (g *GameMachine) Draw(screen *ebiten.Image) {
 	g.CurrentMap().Draw(screen)
+
 }
 
 func (g *GameMachine) Run() error {

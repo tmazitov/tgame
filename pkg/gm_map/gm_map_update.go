@@ -40,23 +40,20 @@ func (m *Map) playerMayMove(keys []ebiten.Key) bool {
 func (m *Map) handlePlayerMove(keys []ebiten.Key) error {
 
 	var (
-		area             gm_camera.CameraArea
-		playerX, playerY float64
-		cameraIsMoved    bool = false
-		err              error
+		area gm_camera.CameraArea
+		err  error
 	)
 
 	if !m.playerMayMove(keys) {
 		return nil
 	}
 
-	playerX, playerY = m.player.GetMoveSidePosition()
-	area = m.camera.GetPointArea(playerX, playerY)
-	cameraIsMoved, err = m.camera.MovementHandler(keys, area)
+	area = m.camera.GetPointArea(m.player.GetPosition())
+	_, err = m.camera.MovementHandler(keys, area)
 	if err != nil {
 		return err
 	}
-	m.player.MovementHandler(keys, cameraIsMoved)
+	m.player.MovementHandler(keys)
 	return nil
 }
 
@@ -67,9 +64,9 @@ func (m *Map) handleDropItem(touches []ebiten.TouchID) {
 
 	droppedItem = m.player.DropItemHandler(touches)
 	if droppedItem != nil {
-		droppedX, droppedY, _ = m.camera.GetRelativeCoords(m.player.GetPosition())
-		droppedX += m.camera.X * 2
-		droppedY += m.camera.Y * 2
+		droppedX, droppedY = m.player.GetPosition()
+		// fmt.Println(droppedX+50, droppedY)
+		droppedX += 25
 		m.AddDropItem(droppedItem, droppedX, droppedY)
 	}
 }

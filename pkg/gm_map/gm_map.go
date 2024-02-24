@@ -1,7 +1,10 @@
 package gm_map
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
@@ -112,10 +115,13 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	}
 
 	for _, entity := range m.entities {
-		entity.Draw(screen)
+		entity.Draw(screen, m.camera)
 	}
 
 	for _, obj := range m.objs {
 		obj.Draw(screen, m.camera)
 	}
+
+	posX, posY := m.player.GetPosition()
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Player: %f %f | %f %f \n", posX, posY, m.camera.X, m.camera.Y))
 }

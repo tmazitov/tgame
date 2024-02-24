@@ -9,16 +9,15 @@ import (
 )
 
 type GameEntity interface {
-	Draw(screen *ebiten.Image)
+	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
 }
 
 type Player interface {
 	GameEntity
-	Draw(screen *ebiten.Image)
 	StaffHandler(keys []ebiten.Key)
 	AttackHandler(keys []ebiten.Key)
 	MouseHandler(touches []ebiten.TouchID)
-	MovementHandler(keys []ebiten.Key, stay bool)
+	MovementHandler(keys []ebiten.Key)
 	DropItemHandler(touches []ebiten.TouchID) *gm_item.Item
 	CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Camera) []*gm_item.Item
 	GetSpeed() *float64
