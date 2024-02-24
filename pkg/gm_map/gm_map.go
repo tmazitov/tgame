@@ -96,48 +96,6 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 	}
 }
 
-func (m *Map) MoveCamera(keys []ebiten.Key, area gm_camera.CameraArea) (bool, error) {
-	return m.camera.MovementHandler(keys, area)
-}
-
-func (m *Map) PlayerMayMove(keys []ebiten.Key) bool {
-	var (
-		playerMoveVectorX float64
-		playerMoveVectorY float64
-	)
-
-	playerMoveVectorX, playerMoveVectorY = m.player.GetMoveVector(keys)
-	for _, obj := range m.objs {
-		if obj.IntersectVector(m.player, playerMoveVectorX, playerMoveVectorY) {
-			return false
-		}
-	}
-	return true
-}
-
-func (m *Map) GetCameraArea(x, y float64) gm_camera.CameraArea {
-	return m.camera.GetPointArea(x, y)
-}
-
-func (m *Map) AddDropItem(item *gm_item.Item, x, y float64) {
-	item.SetPosition(x, y)
-	m.droppedItems = append(m.droppedItems, item)
-}
-
-func (m *Map) GetDropItems() []*gm_item.Item {
-	return m.droppedItems
-}
-
-func (m *Map) DelDropItem(item *gm_item.Item) {
-	for i, droppedItem := range m.droppedItems {
-		if droppedItem == item {
-			// Remove the item from the array
-			m.droppedItems = append(m.droppedItems[:i], m.droppedItems[i+1:]...)
-			break
-		}
-	}
-}
-
 func (m *Map) Draw(screen *ebiten.Image) {
 
 	var border gm_layer.LayerBorder = gm_layer.LayerBorder{
@@ -160,9 +118,4 @@ func (m *Map) Draw(screen *ebiten.Image) {
 	for _, obj := range m.objs {
 		obj.Draw(screen, m.camera)
 	}
-
-	// ebitenutil.DebugPrint(screen, fmt.Sprintf("area %d\n", m.GetCameraArea(m.player.GetPosition())))
-	// relX, relY, inCamera := m.camera.GetRelativeCoords(m.player.GetPosition())
-	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("area %f %f %t \n", relX, relY, inCamera), 300, 0)
-	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("camera %f %f %f \n", m.camera.X, m.camera.Y, m.camera.limitX), 0, 30)
 }

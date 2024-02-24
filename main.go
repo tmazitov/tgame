@@ -63,9 +63,7 @@ func main() {
 	game.SetupItemStorage(itemCollectionStorage)
 	game.SetupPlayer(pl)
 
-	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5), 70, 25)
-	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(7), 90, 70)
-	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(6), 10, 90)
+	m.AddDropItem(game.ItemStorage.GetItem(items.MaterialsCollection, items.Stick).Clone(5), 10, 25)
 	game.AddMap(m)
 	game.Run()
 }

@@ -3,7 +3,6 @@ package gm_machine
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
@@ -36,40 +35,18 @@ func NewGameMachine(title string) *GameMachine {
 
 func (g *GameMachine) Update() error {
 
-	var (
-		m                *gm_map.Map
-		area             gm_camera.CameraArea
-		playerX, playerY float64
-		cameraIsMoved    bool = false
-		collectedItems   []*gm_item.Item
-		err              error
-	)
-
 	if g.player == nil {
 		return nil
 	}
 
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 	g.touches = inpututil.AppendJustPressedTouchIDs(g.touches[:0])
-	m = g.maps[g.currentMap]
 
-	if m.PlayerMayMove(g.keys) {
-		playerX, playerY = g.player.GetMoveSidePosition()
-		area = m.GetCameraArea(playerX, playerY)
-		cameraIsMoved, err = m.MoveCamera(g.keys, area)
-		if err != nil {
-			return err
-		}
-		g.player.MovementHandler(g.keys, cameraIsMoved)
-	}
-	g.player.MouseHandler(g.touches)
-	g.player.StaffHandler(g.keys)
-	g.player.AttackHandler(g.keys)
-	collectedItems = g.player.CollectItemsHandler(g.maps[g.currentMap].GetDropItems())
-	for _, item := range collectedItems {
-		g.maps[g.currentMap].DelDropItem(item)
-	}
-	return nil
+	return g.CurrentMap().Update(g.touches, g.keys)
+}
+
+func (g *GameMachine) CurrentMap() *gm_map.Map {
+	return g.maps[g.currentMap]
 }
 
 func (g *GameMachine) AddMap(m *gm_map.Map) {
@@ -85,7 +62,7 @@ func (g *GameMachine) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *GameMachine) Draw(screen *ebiten.Image) {
-	g.maps[g.currentMap].Draw(screen)
+	g.CurrentMap().Draw(screen)
 }
 
 func (g *GameMachine) Run() error {

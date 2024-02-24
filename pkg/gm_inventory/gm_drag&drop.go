@@ -6,10 +6,11 @@ import (
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
 
-func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) {
+func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) *gm_item.Item {
 
 	var (
 		touchedSlot *Slot
+		item        *gm_item.Item
 	)
 
 	// Find touch on slot
@@ -17,7 +18,7 @@ func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) {
 		i.replaceTouch = i.findTouchOnSlot(touches)
 	}
 	if i.replaceTouch == nil {
-		return
+		return nil
 	}
 
 	// Update dragged item position
@@ -28,11 +29,26 @@ func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) {
 		touchedSlot, _, _ = i.CheckTouchOnSlot(i.replaceTouch.Position())
 		if i.putItemIsPossible(i.replaceTouch.draggingItem, touchedSlot) {
 			i.putItem(i.replaceTouch, touchedSlot)
+		} else if !i.IsInventoryArea(i.replaceTouch.Position()) {
+			item = i.replaceTouch.draggingItem
+			i.replaceTouch = nil
+			return item
 		} else {
 			i.putItem(i.replaceTouch, i.replaceTouch.draggingItemOriginSlot)
 		}
 		i.replaceTouch = nil
 	}
+	return nil
+}
+
+func (i *Inventory) IsInventoryArea(x, y int) bool {
+	var (
+		inventoryX int = int(i.x)
+		inventoryY int = int(i.y)
+	)
+
+	return x >= inventoryX && x <= inventoryX+i.Width &&
+		y >= inventoryY && y <= inventoryY+i.Height
 }
 
 func (i *Inventory) findTouchOnSlot(touches []ebiten.TouchID) *Touch {

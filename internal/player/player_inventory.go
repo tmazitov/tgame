@@ -54,11 +54,11 @@ func (pi *PlayerInventory) HandleToggle(keys []ebiten.Key) {
 	}
 }
 
-func (pi *PlayerInventory) HandleDragAndDrop(touches []ebiten.TouchID) {
+func (pi *PlayerInventory) HandleDragAndDrop(touches []ebiten.TouchID) *gm_item.Item {
 	if !pi.inventory.IsVisible {
-		return
+		return nil
 	}
-	pi.inventory.HandleDragAndDrop(touches)
+	return pi.inventory.HandleDragAndDrop(touches)
 }
 
 func (pi *PlayerInventory) HandleHoverSlot() {
