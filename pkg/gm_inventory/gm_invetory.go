@@ -2,6 +2,7 @@ package gm_inventory
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
@@ -12,6 +13,7 @@ type InventoryOpt struct {
 	SlotImagePath string
 	SlotSize      int
 	X             float64
+	Font          *gm_font.Font
 	Y             float64
 }
 
@@ -24,6 +26,7 @@ type Inventory struct {
 	replaceTouch *Touch
 	hoveredSlot  *Slot
 	slotSize     int
+	font         *gm_font.Font
 	x            float64
 	y            float64
 }
@@ -40,6 +43,10 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 
 	if opt.SlotSize == 0 {
 		return nil, ErrSlotImageSizeZero
+	}
+
+	if opt.Font == nil {
+		return nil, ErrNilFont
 	}
 
 	var (
@@ -69,6 +76,7 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 		hoveredSlot: nil,
 		x:           opt.X,
 		y:           opt.Y,
+		font:        opt.Font,
 	}, nil
 }
 
@@ -201,7 +209,7 @@ func (i *Inventory) Draw(screen *ebiten.Image) {
 			slot = i.slots[row][column]
 			slotX = i.x + float64(column*i.slotSize)
 			slotY = i.y + float64(row*i.slotSize)
-			slot.Draw(slotX, slotY, screen)
+			slot.Draw(slotX, slotY, i.font, screen)
 		}
 	}
 

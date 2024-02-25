@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_anime"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
@@ -36,7 +37,7 @@ type Player struct {
 	inventory   *PlayerInventory
 }
 
-func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
+func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths, font *gm_font.Font) (*Player, error) {
 
 	var (
 		err         error
@@ -71,7 +72,7 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths) (*Player, error) {
 		return nil, err
 	}
 
-	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 30); err != nil {
+	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 30, font); err != nil {
 		return nil, err
 	}
 

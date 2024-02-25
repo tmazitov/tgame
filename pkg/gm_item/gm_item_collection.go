@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
@@ -14,11 +15,13 @@ type ItemCollection struct {
 	Name              string
 	items             map[uint]*Item
 	descriptionSource *gm_layer.Image
+	font              *gm_font.Font
 }
 
 type ItemCollectionOpt struct {
 	DescriptionSourcePath string
 	ItemSize              int
+	Font                  *gm_font.Font
 }
 
 func NewItemCollection(name string, opt ItemCollectionOpt) (*ItemCollection, error) {
@@ -32,6 +35,10 @@ func NewItemCollection(name string, opt ItemCollectionOpt) (*ItemCollection, err
 		return nil, ErrEmptyDescriptionSourcePath
 	}
 
+	if opt.Font == nil {
+		return nil, ErrNilFont
+	}
+
 	if opt.ItemSize == 0 {
 		return nil, ErrZeroItemSize
 	}
@@ -43,6 +50,7 @@ func NewItemCollection(name string, opt ItemCollectionOpt) (*ItemCollection, err
 	return &ItemCollection{
 		Name:              name,
 		items:             map[uint]*Item{},
+		font:              opt.Font,
 		descriptionSource: descriptionSource,
 	}, nil
 }
@@ -75,7 +83,7 @@ func (c *ItemCollection) FillByJson(path string) error {
 	}
 
 	for _, itemRaw := range itemsRaw {
-		item, err = itemRaw.ToItem(c.descriptionSource)
+		item, err = itemRaw.ToItem(c.font, c.descriptionSource)
 		if err != nil {
 			return err
 		}

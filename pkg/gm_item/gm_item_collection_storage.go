@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 )
 
 type ItemCollectionStorage struct {
@@ -12,7 +14,7 @@ type ItemCollectionStorage struct {
 	collectionsNames []string
 }
 
-func NewItemCollectionStorage(configPath string, itemSize int) (*ItemCollectionStorage, error) {
+func NewItemCollectionStorage(configPath string, itemSize int, font *gm_font.Font) (*ItemCollectionStorage, error) {
 
 	var (
 		collectionsRaw   []*ItemCollectionRaw
@@ -42,7 +44,7 @@ func NewItemCollectionStorage(configPath string, itemSize int) (*ItemCollectionS
 	}
 
 	for _, raw := range collectionsRaw {
-		collection, err = raw.ToItemCollection(itemSize)
+		collection, err = raw.ToItemCollection(font, itemSize)
 		if err != nil {
 			return nil, err
 		}

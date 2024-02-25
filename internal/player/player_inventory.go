@@ -2,6 +2,7 @@ package player
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
@@ -11,7 +12,7 @@ type PlayerInventory struct {
 	pressedKeyIndex int
 }
 
-func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
+func NewPlayerInventory(x, y float64, font *gm_font.Font) (*PlayerInventory, error) {
 
 	var (
 		inventory *gm_inventory.Inventory
@@ -25,6 +26,7 @@ func NewPlayerInventory(x, y float64) (*PlayerInventory, error) {
 		SlotSize:      33,
 		X:             x,
 		Y:             y,
+		Font:          font,
 	}); err != nil {
 		return nil, err
 	}

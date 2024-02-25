@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
 	stgs "github.com/tmazitov/tgame.git/settings"
@@ -18,6 +19,7 @@ type GameMachine struct {
 	touches     []ebiten.TouchID
 	player      gm_entity.Player
 	ItemStorage *gm_item.ItemCollectionStorage
+	font        *gm_font.Font
 }
 
 func NewGameMachine(title string) *GameMachine {
@@ -30,6 +32,7 @@ func NewGameMachine(title string) *GameMachine {
 		keys:        []ebiten.Key{},
 		touches:     []ebiten.TouchID{},
 		ItemStorage: nil,
+		font:        nil,
 	}
 }
 

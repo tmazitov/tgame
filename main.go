@@ -21,6 +21,7 @@ import (
 	"github.com/tmazitov/tgame.git/internal/maps"
 	"github.com/tmazitov/tgame.git/internal/player"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
+	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	gm_machine "github.com/tmazitov/tgame.git/pkg/gm_machine"
 	"github.com/tmazitov/tgame.git/pkg/gm_map"
@@ -31,13 +32,19 @@ func main() {
 	var (
 		m                     *gm_map.Map
 		err                   error
+		f                     *gm_font.Font
 		pl                    *player.Player
 		itemCollectionStorage *gm_item.ItemCollectionStorage
 	)
+
+	if f, err = gm_font.NewFont("assets/fonts/pipel.png"); err != nil {
+		panic(err)
+	}
+
 	pl, err = player.NewPlayer(0, 0, player.PlayerImagesPaths{
 		Tiles:  "assets/textures/characters/Humans_Smith.png",
 		Shadow: "assets/textures/characters/shadow.png",
-	})
+	}, f)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +61,7 @@ func main() {
 		panic(err)
 	}
 
-	itemCollectionStorage, err = gm_item.NewItemCollectionStorage("items/collectionsConfig.json", 32)
+	itemCollectionStorage, err = gm_item.NewItemCollectionStorage("items/collectionsConfig.json", 32, f)
 	if err != nil {
 		panic(err)
 	}
