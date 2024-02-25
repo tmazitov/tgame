@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 )
 
 type Camera struct {
@@ -49,6 +50,29 @@ func (c *Camera) GetRelativeCoords(x, y float64) (float64, float64, bool) {
 	relativeY = y - c.Y
 	isInCamera = relativeX >= 0 && relativeX <= float64(c.Width) &&
 		relativeY >= 0 && relativeY <= float64(c.Height)
+	return relativeX, relativeY, isInCamera
+}
+
+func (c *Camera) GetRelativeCoordsByRect(rect gm_geometry.IRect) (float64, float64, bool) {
+
+	var (
+		relativeX     float64
+		relativeY     float64
+		isInCamera    bool                  = false
+		pointInCamera bool                  = false
+		points        [4]*gm_geometry.Point = rect.Points()
+	)
+
+	for index, point := range points {
+		if index == 0 {
+			relativeX, relativeY, pointInCamera = c.GetRelativeCoords(point.X, point.Y)
+			isInCamera = isInCamera || pointInCamera
+		} else {
+			_, _, pointInCamera = c.GetRelativeCoords(point.X, point.Y)
+			isInCamera = isInCamera || pointInCamera
+		}
+	}
+
 	return relativeX, relativeY, isInCamera
 }
 

@@ -3,6 +3,7 @@ package gm_item
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
+	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
@@ -18,6 +19,7 @@ type Item struct {
 	Y            float64
 	isMoving     bool
 	IsDropped    bool
+	shape        *gm_geometry.Rect
 }
 
 type ItemOptions struct {
@@ -34,6 +36,7 @@ type ItemOptions struct {
 func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 
 	var (
+		shape      *gm_geometry.Rect
 		image      *gm_layer.Image
 		smallImage *gm_layer.Image
 		err        error
@@ -54,6 +57,8 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		opt.Amount = 1
 	}
 
+	shape = gm_geometry.NewRect(&opt.X, &opt.Y, smallImage.Width(), smallImage.Height())
+
 	return &Item{
 		ID:           id,
 		Name:         name,
@@ -66,6 +71,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		IsDropped:    true,
 		Amount:       opt.Amount,
 		description:  nil,
+		shape:        shape,
 	}, nil
 }
 
@@ -83,7 +89,7 @@ func (i *Item) Clone(amount uint) *Item {
 		amount = 1
 	}
 
-	return &Item{
+	var item Item = Item{
 		ID:           i.ID,
 		Name:         i.Name,
 		MaxStackSize: i.MaxStackSize,
@@ -96,6 +102,10 @@ func (i *Item) Clone(amount uint) *Item {
 		IsDropped:    i.IsDropped,
 		description:  i.description,
 	}
+
+	item.shape = gm_geometry.NewRect(&item.X, &item.Y, item.smallImage.Width(), item.smallImage.Height())
+
+	return &item
 }
 
 func (i *Item) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
@@ -112,7 +122,7 @@ func (i *Item) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 		return
 	}
 
-	positionX, positionY, isInCamera = camera.GetRelativeCoords(i.X, i.Y)
+	positionX, positionY, isInCamera = camera.GetRelativeCoordsByRect(i.shape)
 	if !isInCamera {
 		return
 	}

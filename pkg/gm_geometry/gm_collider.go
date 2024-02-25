@@ -47,7 +47,7 @@ func NewCollider(x, y *float64, opt ColliderOptions) *Collider {
 	}
 }
 
-func (c *Collider) Points() []*Point {
+func (c *Collider) Points() [4]*Point {
 
 	var (
 		collX float64 = *c.X
@@ -61,7 +61,7 @@ func (c *Collider) Points() []*Point {
 		collY += c.paddingTop
 	}
 
-	return []*Point{
+	return [4]*Point{
 		c.topLeft.Update(collX, collY),
 		c.topRight.Update(collX+c.width, collY),
 		c.botRight.Update(collX+c.width, collY+c.height),

@@ -13,6 +13,7 @@ type Tree struct {
 	Height int
 	Image  *ebiten.Image
 	coll   *gm_geometry.Collider
+	shape  *gm_geometry.Rect
 }
 
 func NewTree(x, y float64, image *ebiten.Image) *Tree {
@@ -34,6 +35,7 @@ func NewTree(x, y float64, image *ebiten.Image) *Tree {
 		Height: 64,
 		Image:  image,
 		coll:   nil,
+		shape:  nil,
 	}
 
 	tree.coll = gm_geometry.NewCollider(&tree.X, &tree.Y, gm_geometry.ColliderOptions{
@@ -42,6 +44,7 @@ func NewTree(x, y float64, image *ebiten.Image) *Tree {
 		PaddingTop:  paddingTop,
 		PaddingLeft: paddingLeft,
 	})
+	tree.shape = gm_geometry.NewRect(&x, &y, width, height)
 	return tree
 }
 
@@ -57,7 +60,7 @@ func (t *Tree) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 		isOnScreen bool
 	)
 
-	relativeX, relativeY, isOnScreen = camera.GetRelativeCoords(t.X, t.Y)
+	relativeX, relativeY, isOnScreen = camera.GetRelativeCoordsByRect(t.shape)
 	if !isOnScreen {
 		return
 	}
