@@ -2,8 +2,7 @@ package gm_map
 
 import "github.com/tmazitov/tgame.git/pkg/gm_item"
 
-func (m *Map) AddDropItem(item *gm_item.Item, x, y float64) {
-	item.SetPosition(x, y)
+func (m *Map) AddDropItem(item *gm_item.Item) {
 	m.droppedItems = append(m.droppedItems, item)
 }
 

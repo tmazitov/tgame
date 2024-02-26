@@ -69,7 +69,7 @@ func (c *Collider) Points() [4]*Point {
 	}
 }
 
-func (c *Collider) GetBorders() []*Line {
+func (c *Collider) Borders() [4]*Line {
 
 	var (
 		collX float64 = *c.X
@@ -83,17 +83,17 @@ func (c *Collider) GetBorders() []*Line {
 		collY += c.paddingTop
 	}
 
-	return []*Line{
+	return [4]*Line{
 		c.top.Update(collX, collY, collX+c.width, collY),
 		c.right.Update(collX+c.width, collY, collX+c.width, collY+c.height),
 		c.bot.Update(collX, collY+c.height, collX+c.width, collY+c.height),
 		c.left.Update(collX, collY, collX, collY+c.height),
 	}
 }
-func (c *Collider) IsIntersect(coll *Collider) bool {
+func (c *Collider) IsIntersect(rect IRect) bool {
 	var (
-		borders     []*Line = coll.GetBorders()
-		selfBorders []*Line = c.GetBorders()
+		borders     [4]*Line = rect.Borders()
+		selfBorders [4]*Line = c.Borders()
 	)
 	for _, line := range borders {
 		for _, selfLine := range selfBorders {
@@ -105,10 +105,10 @@ func (c *Collider) IsIntersect(coll *Collider) bool {
 	return false
 }
 
-func (c *Collider) IsIntersectWithVector(coll *Collider, x, y float64) bool {
+func (c *Collider) IsIntersectWithVector(rect IRect, x, y float64) bool {
 	var (
-		borders     []*Line = coll.GetBorders()
-		selfBorders []*Line = c.GetBorders()
+		borders     [4]*Line = rect.Borders()
+		selfBorders [4]*Line = c.Borders()
 	)
 	for _, line := range borders {
 		line.Shift(x, y)

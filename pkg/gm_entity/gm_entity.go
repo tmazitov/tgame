@@ -18,7 +18,7 @@ type Player interface {
 	AttackHandler(keys []ebiten.Key)
 	MouseHandler(touches []ebiten.TouchID)
 	MovementHandler(keys []ebiten.Key)
-	DropItemHandler(touches []ebiten.TouchID) *gm_item.Item
+	DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_geometry.Point)
 	CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Camera) []*gm_item.Item
 	GetSpeed() *float64
 	GetMoveVector(keys []ebiten.Key) (float64, float64)

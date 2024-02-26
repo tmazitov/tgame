@@ -69,14 +69,10 @@ func (t *Tree) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 	screen.DrawImage(t.Image, op)
 }
 
-func (t *Tree) IntersectVector(obj gm_geometry.IMapIntersectable, x, y float64) bool {
-	var (
-		objCollider = obj.GetCollider()
-	)
+func (t *Tree) IntersectVector(obj gm_geometry.IRect, x, y float64) bool {
+	return t.coll.IsIntersectWithVector(obj, x, y)
+}
 
-	if objCollider == nil {
-		return false
-	}
-
-	return t.coll.IsIntersectWithVector(objCollider, x, y)
+func (t *Tree) Intersect(obj gm_geometry.IRect) bool {
+	return t.coll.IsIntersect(obj)
 }

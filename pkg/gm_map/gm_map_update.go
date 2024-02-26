@@ -3,6 +3,7 @@ package gm_map
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
+	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
 
@@ -30,7 +31,7 @@ func (m *Map) playerMayMove(keys []ebiten.Key) bool {
 
 	playerMoveVectorX, playerMoveVectorY = m.player.GetMoveVector(keys)
 	for _, obj := range m.objs {
-		if obj.IntersectVector(m.player, playerMoveVectorX, playerMoveVectorY) {
+		if obj.IntersectVector(m.player.GetCollider(), playerMoveVectorX, playerMoveVectorY) {
 			return false
 		}
 	}
@@ -59,16 +60,19 @@ func (m *Map) handlePlayerMove(keys []ebiten.Key) error {
 
 func (m *Map) handleDropItem(touches []ebiten.TouchID) {
 
-	var droppedItem *gm_item.Item
-	var droppedX, droppedY float64
+	var (
+		dropItem  *gm_item.Item
+		dropPoint *gm_geometry.Point
+	)
 
-	droppedItem = m.player.DropItemHandler(touches)
-	if droppedItem != nil {
-		droppedX, droppedY = m.player.GetPosition()
-		droppedX += 25
-		droppedItem.Drop()
-		m.AddDropItem(droppedItem, droppedX, droppedY)
+	dropItem, dropPoint = m.player.DropItemHandler(touches)
+	if dropItem == nil || dropPoint == nil {
+		return
 	}
+	dropItem.Drop(dropPoint.X, dropPoint.Y)
+
+	m.AddDropItem(dropItem)
+
 }
 
 func (m *Map) handleCollectItem() {

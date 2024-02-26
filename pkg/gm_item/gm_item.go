@@ -75,7 +75,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		Amount:       opt.Amount,
 		description:  nil,
 		shape:        shape,
-		lastDropTime: time.Now(),
+		lastDropTime: time.Time{},
 	}, nil
 }
 
@@ -113,9 +113,15 @@ func (i *Item) Clone(amount uint) *Item {
 	return &item
 }
 
-func (i *Item) Drop() {
+func (i *Item) Drop(x, y float64) {
+	i.SetPosition(x, y)
 	i.IsDropped = true
 	i.lastDropTime = time.Now()
+}
+
+func (i *Item) AutoDrop(x, y float64) {
+	i.SetPosition(x, y)
+	i.IsDropped = true
 }
 
 func (i *Item) IsCollectable() bool {
@@ -184,6 +190,10 @@ func (i *Item) DrawDescription(screen *ebiten.Image) {
 	if i.description != nil {
 		i.description.Draw(i.X, i.Y+float64(i.image.Height()), screen)
 	}
+}
+
+func (i *Item) Shape() *gm_geometry.Rect {
+	return i.shape
 }
 
 func (i *Item) Size() int {

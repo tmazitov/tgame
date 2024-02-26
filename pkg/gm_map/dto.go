@@ -15,7 +15,8 @@ const (
 type IMapObj interface {
 	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
 	GetCollider() *gm_geometry.Collider
-	IntersectVector(obj gm_geometry.IMapIntersectable, x, y float64) bool
+	Intersect(obj gm_geometry.IRect) bool
+	IntersectVector(obj gm_geometry.IRect, x, y float64) bool
 }
 
 // type IDropedItem interface {
