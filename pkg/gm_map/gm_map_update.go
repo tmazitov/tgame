@@ -65,8 +65,8 @@ func (m *Map) handleDropItem(touches []ebiten.TouchID) {
 	droppedItem = m.player.DropItemHandler(touches)
 	if droppedItem != nil {
 		droppedX, droppedY = m.player.GetPosition()
-		// fmt.Println(droppedX+50, droppedY)
 		droppedX += 25
+		droppedItem.Drop()
 		m.AddDropItem(droppedItem, droppedX, droppedY)
 	}
 }

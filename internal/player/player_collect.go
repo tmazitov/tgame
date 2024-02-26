@@ -32,6 +32,11 @@ func (p *Player) CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Ca
 		Y: playerRelY - float64(p.images.Tiles.TileSize/2),
 	}
 	for _, item := range items {
+
+		if !item.IsCollectable() {
+			continue
+		}
+
 		relX, relY, isInCamera = camera.GetRelativeCoords(item.X, item.Y)
 		// fmt.Printf("relX: %v, relY: %v, isInCamera: %v\n", relX, relY, isInCamera)
 		if !isInCamera {

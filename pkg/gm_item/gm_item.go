@@ -1,6 +1,8 @@
 package gm_item
 
 import (
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
@@ -20,6 +22,7 @@ type Item struct {
 	isMoving     bool
 	IsDropped    bool
 	shape        *gm_geometry.Rect
+	lastDropTime time.Time
 }
 
 type ItemOptions struct {
@@ -72,6 +75,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		Amount:       opt.Amount,
 		description:  nil,
 		shape:        shape,
+		lastDropTime: time.Now(),
 	}, nil
 }
 
@@ -101,11 +105,23 @@ func (i *Item) Clone(amount uint) *Item {
 		smallImage:   i.smallImage,
 		IsDropped:    i.IsDropped,
 		description:  i.description,
+		lastDropTime: i.lastDropTime,
 	}
 
 	item.shape = gm_geometry.NewRect(&item.X, &item.Y, item.smallImage.Width(), item.smallImage.Height())
 
 	return &item
+}
+
+func (i *Item) Drop() {
+	i.IsDropped = true
+	i.lastDropTime = time.Now()
+}
+
+func (i *Item) IsCollectable() bool {
+	var now time.Time = time.Now()
+	diff := now.Sub(i.lastDropTime)
+	return diff.Seconds() > 3
 }
 
 func (i *Item) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
