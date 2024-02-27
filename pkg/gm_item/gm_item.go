@@ -23,6 +23,7 @@ type Item struct {
 	IsDropped    bool
 	shape        *gm_geometry.Rect
 	lastDropTime time.Time
+	dropProcess  *ItemDropPath
 }
 
 type ItemOptions struct {
@@ -87,6 +88,10 @@ func (i *Item) SetupDescription(source *gm_layer.Image, opt ItemDescriptionOpt) 
 	return nil
 }
 
+func (i *Item) InDropProcess() bool {
+	return i.dropProcess != nil
+}
+
 func (i *Item) Clone(amount uint) *Item {
 
 	if amount == 0 {
@@ -113,8 +118,25 @@ func (i *Item) Clone(amount uint) *Item {
 	return &item
 }
 
-func (i *Item) Drop(x, y float64) {
-	i.SetPosition(x, y)
+func (i *Item) Update() {
+
+	var (
+		step gm_geometry.Point
+	)
+
+	if i.dropProcess == nil {
+		return
+	}
+	if i.dropProcess.IsFinished() {
+		i.dropProcess = nil
+		return
+	}
+	step = i.dropProcess.Increment()
+	i.SetPosition(step.X, step.Y)
+}
+
+func (i *Item) Drop(source *gm_geometry.Point, target *gm_geometry.Point) {
+	i.dropProcess = NewItemDropPath(source, target)
 	i.IsDropped = true
 	i.lastDropTime = time.Now()
 }

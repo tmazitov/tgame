@@ -20,6 +20,11 @@ func (m *Map) Update(touches []ebiten.TouchID, keys []ebiten.Key) error {
 	m.player.MouseHandler(touches)
 	m.player.StaffHandler(keys)
 	m.player.AttackHandler(keys)
+
+	for _, item := range m.droppedItems {
+		item.Update()
+	}
+
 	return nil
 }
 
@@ -61,18 +66,29 @@ func (m *Map) handlePlayerMove(keys []ebiten.Key) error {
 func (m *Map) handleDropItem(touches []ebiten.TouchID) {
 
 	var (
-		dropItem  *gm_item.Item
-		dropPoint *gm_geometry.Point
+		dropItem   *gm_item.Item
+		dropTarget *gm_geometry.Point
+		dropSource *gm_geometry.Point
 	)
 
-	dropItem, dropPoint = m.player.DropItemHandler(touches)
-	if dropItem == nil || dropPoint == nil {
+	dropItem, dropSource, dropTarget = m.player.DropItemHandler(touches)
+	if dropItem == nil || dropTarget == nil || dropSource == nil {
 		return
 	}
-	dropItem.Drop(dropPoint.X, dropPoint.Y)
+
+	if dropSource.Y == dropTarget.Y {
+		dropSource.X -= float64(m.tileSize / 2)
+		dropSource.Y -= float64(m.tileSize)
+		dropTarget.X -= float64(m.tileSize / 2)
+		dropTarget.Y -= float64(m.tileSize)
+	} else if dropSource.Y > dropTarget.Y {
+		dropSource.Y -= float64(m.tileSize / 2)
+	}
+
+	dropItem.SetPosition(dropSource.X, dropSource.Y)
+	dropItem.Drop(dropSource, dropTarget)
 
 	m.AddDropItem(dropItem)
-
 }
 
 func (m *Map) handleCollectItem() {

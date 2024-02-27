@@ -18,7 +18,7 @@ type Player interface {
 	AttackHandler(keys []ebiten.Key)
 	MouseHandler(touches []ebiten.TouchID)
 	MovementHandler(keys []ebiten.Key)
-	DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_geometry.Point)
+	DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_geometry.Point, *gm_geometry.Point)
 	CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Camera) []*gm_item.Item
 	GetSpeed() *float64
 	GetMoveVector(keys []ebiten.Key) (float64, float64)
@@ -26,4 +26,5 @@ type Player interface {
 	GetPosition() (float64, float64)
 	GetInventory() *gm_inventory.Inventory
 	GetMoveSidePosition() (float64, float64)
+	GetShape() gm_geometry.IRect
 }

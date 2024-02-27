@@ -7,15 +7,29 @@ import (
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
 
-func (p *Player) DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_geometry.Point) {
+func (p *Player) DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_geometry.Point, *gm_geometry.Point) {
 
 	var item *gm_item.Item = p.inventory.HandleDragAndDrop(touches)
 
 	if item != nil {
 		var (
-			lastAction PlayerAction = p.lastAction
-			posX, posY float64      = p.X, p.Y
+			lastAction  PlayerAction          = p.lastAction
+			shape       gm_geometry.IRect     = p.GetShape()
+			shapePoints [4]*gm_geometry.Point = shape.Points()
+			posX, posY  float64
+			source      *gm_geometry.Point
+			target      *gm_geometry.Point
 		)
+
+		if lastAction == Right_PlayerAction {
+			posX = shapePoints[1].X
+			posY = shapePoints[1].Y
+		} else {
+			posX = shapePoints[0].X
+			posY = shapePoints[0].Y
+		}
+
+		source = gm_geometry.NewPoint(posX, posY)
 
 		if lastAction == Right_PlayerAction {
 			posX += stgs.ItemDropDistance
@@ -27,12 +41,10 @@ func (p *Player) DropItemHandler(touches []ebiten.TouchID) (*gm_item.Item, *gm_g
 			posY += stgs.ItemDropDistance
 		}
 
-		posX += float64(stgs.TileSize / 2)
-		posY += float64(stgs.TileSize / 2)
+		target = gm_geometry.NewPoint(posX, posY)
 
-		// item.Drop(posX, posY)
-		return item, gm_geometry.NewPoint(posX, posY)
+		return item, source, target
 	}
 
-	return nil, nil
+	return nil, nil, nil
 }

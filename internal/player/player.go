@@ -247,3 +247,7 @@ func (p *Player) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 func (p *Player) StaffHandler(keys []ebiten.Key) {
 	p.inventory.HandleToggle(keys)
 }
+
+func (p *Player) GetShape() gm_geometry.IRect {
+	return p.coll
+}
