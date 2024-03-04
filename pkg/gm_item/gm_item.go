@@ -161,6 +161,9 @@ func (i *Item) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 
 	if !i.IsDropped || camera == nil {
 		op := &ebiten.DrawImageOptions{}
+		if i.image.TileSize == 16 {
+			op.GeoM.Scale(2, 2)
+		}
 		op.GeoM.Translate(i.X, i.Y)
 		screen.DrawImage(i.image.Inst, op)
 		return
@@ -210,7 +213,7 @@ func (i *Item) SetAmount(value uint) {
 
 func (i *Item) DrawDescription(screen *ebiten.Image) {
 	if i.description != nil {
-		i.description.Draw(i.X, i.Y+float64(i.image.Height()), screen)
+		i.description.Draw(i.X, i.Y+32, screen)
 	}
 }
 

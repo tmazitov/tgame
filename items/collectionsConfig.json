@@ -3,5 +3,10 @@
 		"name" : "materials",
 		"itemsPath" : "items/materials.json",
 		"descriptionSourcePath" : "assets/textures/description_7.png"
+	},
+	{
+		"name" : "food",
+		"itemsPath" : "items/food.json",
+		"descriptionSourcePath" : "assets/textures/description_7.png"
 	}
 ]
