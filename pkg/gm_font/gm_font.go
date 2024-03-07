@@ -73,9 +73,9 @@ func (f *Font) Print(img *ebiten.Image, message string, pos image.Point, op *ebi
 		op = &ebiten.DrawImageOptions{}
 	}
 
-	shadowPos := image.Pt(pos.X+1, pos.Y)
+	shadowPos := image.Pt(pos.X+1, pos.Y+1)
 	shadowOp := &ebiten.DrawImageOptions{}
-	shadowOp.ColorScale.Scale(0, 0, 0, 0.5)
+	shadowOp.ColorScale.Scale(0.2, 0.2, 0.2, 0.35)
 	f.face.PrintOpts(img, shadowPos, message, shadowOp)
 	f.face.PrintOpts(img, pos, message, op)
 }

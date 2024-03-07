@@ -5,6 +5,7 @@ package items
 var (
 	Stick     uint = 1
 	CherryPie uint = 2
+	Tomato    uint = 3
 )
 
 // COLLECTIONs
