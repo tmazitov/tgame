@@ -17,8 +17,8 @@
 		"id": 3,
 		"name": "Tomato",
 		"imagePath" : "assets/textures/tomato.png",
-		"smallImagePath" : "assets/textures/tomato.png",
-		"imageSize" : 16,
+		"smallImagePath" : "assets/textures/tomato_small.png",
+		"imageSize" : 32,
 		"smallImageSize" : 16,
 		"maxStack" :16,
 		"description" : {
