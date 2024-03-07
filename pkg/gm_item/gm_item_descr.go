@@ -2,6 +2,7 @@ package gm_item
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_font"
@@ -30,7 +31,7 @@ func NewItemDescription(title string, source *gm_layer.Image, opt ItemDescriptio
 		return nil, ErrZeroDescriptionSize
 	}
 
-	if source == nil || source.TileXCount != 3 || source.TileYCount != 3 {
+	if source == nil || source.TileXCount != 5 || source.TileYCount != 5 {
 		return nil, ErrInvalidSourceImage
 	}
 
@@ -51,35 +52,65 @@ func NewItemDescription(title string, source *gm_layer.Image, opt ItemDescriptio
 func (i *ItemDescription) makeImage(source *gm_layer.Image) {
 
 	var (
-		img *ebiten.Image
-		op  *ebiten.DrawImageOptions
+		img         *ebiten.Image
+		tileCountX  int = i.width / source.TileSize
+		tileCountY  int = i.height / source.TileSize
+		imageHeight int = i.height
+		imageWidth  int = i.width
+		paddingX    int
+		paddingY    int
+		op          *ebiten.DrawImageOptions
 	)
 
-	for y := 0; y < i.height; y++ {
-		for x := 0; x < i.width; x++ {
-			if x == 0 && y == 0 {
-				img = source.GetTile(0, 0)
-			} else if x == i.width-1 && y == 0 {
-				img = source.GetTile(2, 0)
-			} else if x == 0 && y == i.height-1 {
-				img = source.GetTile(0, 2)
-			} else if x == i.width-1 && y == i.height-1 {
-				img = source.GetTile(2, 2)
-			} else if x == 0 {
-				img = source.GetTile(0, 1)
-			} else if x == i.width-1 {
-				img = source.GetTile(2, 1)
-			} else if y == 0 {
-				img = source.GetTile(1, 0)
-			} else if y == i.height-1 {
-				img = source.GetTile(1, 2)
+	if i.width%source.TileSize != 0 {
+		tileCountX++
+	}
+
+	if i.height%source.TileSize != 0 {
+		tileCountY++
+	}
+
+	for y := 0; y < tileCountY; y++ {
+		for x := 0; x < tileCountX; x++ {
+
+			if imageHeight < source.TileSize {
+				paddingY = source.TileSize - int(math.Max(float64(imageHeight), 2))
 			} else {
-				img = source.GetTile(1, 1)
+				paddingY = 0
+			}
+
+			if imageWidth < source.TileSize {
+				paddingX = source.TileSize - int(math.Max(float64(imageWidth), 2))
+			} else {
+				paddingX = 0
+			}
+
+			if x == 0 && y == 0 {
+				img = source.GetTilePadding(0, 0, paddingX, paddingY)
+			} else if x == tileCountX-1 && y == 0 {
+				img = source.GetTilePadding(2, 0, paddingX, paddingY)
+			} else if x == 0 && y == tileCountY-1 {
+				img = source.GetTilePadding(0, 2, paddingX, paddingY)
+			} else if x == tileCountX-1 && y == tileCountY-1 {
+				img = source.GetTilePadding(2, 2, paddingX, paddingY)
+			} else if x == 0 {
+				img = source.GetTilePadding(0, 1, paddingX, paddingY)
+			} else if x == tileCountX-1 {
+				img = source.GetTilePadding(2, 1, paddingX, paddingY)
+			} else if y == 0 {
+				img = source.GetTilePadding(1, 0, paddingX, paddingY)
+			} else if y == tileCountY-1 {
+				img = source.GetTilePadding(1, 2, paddingX, paddingY)
+			} else {
+				img = source.GetTilePadding(1, 1, paddingX, paddingY)
 			}
 			op = &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(float64(x*source.TileSize), float64(y*source.TileSize))
 			i.image.DrawImage(img, op)
+			imageWidth -= source.TileSize
 		}
+		imageWidth = i.width
+		imageHeight -= source.TileSize
 	}
 
 	var (

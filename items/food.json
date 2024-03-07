@@ -8,8 +8,8 @@
 		"smallImageSize" : 16,
 		"maxStack" :6,
 		"description" : {
-			"height" : 2,
-			"width" : 5,
+			"height" : 24,
+			"width" : 74,
 			"textPadding" : 8
 		}
 	},
@@ -22,8 +22,8 @@
 		"smallImageSize" : 16,
 		"maxStack" :16,
 		"description" : {
-			"height" : 2,
-			"width" : 3,
+			"height" : 24,
+			"width" : 54,
 			"textPadding" : 8
 		}
 	}

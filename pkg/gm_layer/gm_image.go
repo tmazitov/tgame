@@ -67,6 +67,14 @@ func (i *Image) GetTile(x, y int) *ebiten.Image {
 	return i.Rect(x*i.TileSize, y*i.TileSize, i.TileSize, i.TileSize)
 }
 
+func (i *Image) GetTilePadding(x, y int, paddingX, paddingY int) *ebiten.Image {
+	if x < 0 || x >= i.TileXCount || y < 0 || y >= i.TileYCount {
+		return nil
+	}
+
+	return i.Rect(x*i.TileSize+paddingX, y*i.TileSize+paddingY, i.TileSize, i.TileSize)
+}
+
 func (i *Image) Rect(x, y, height, width int) *ebiten.Image {
 	return i.Inst.SubImage(image.Rect(x, y, x+width, y+height)).(*ebiten.Image)
 }
