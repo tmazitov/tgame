@@ -1,0 +1,30 @@
+[
+	{
+		"id": 2,
+		"name": "Cherry pie",
+		"imagePath" : "assets/textures/cherry pie.png",
+		"smallImagePath" : "assets/textures/cherry pie.png",
+		"imageSize" : 16,
+		"smallImageSize" : 16,
+		"maxStack" :6,
+		"description" : {
+			"height" : 24,
+			"width" : 74,
+			"textPadding" : 8
+		}
+	},
+	{
+		"id": 3,
+		"name": "Tomato",
+		"imagePath" : "assets/textures/tomato.png",
+		"smallImagePath" : "assets/textures/tomato.png",
+		"imageSize" : 16,
+		"smallImageSize" : 16,
+		"maxStack" :16,
+		"description" : {
+			"height" : 24,
+			"width" : 54,
+			"textPadding" : 8
+		}
+	}
+]

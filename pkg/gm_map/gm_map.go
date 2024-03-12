@@ -1,20 +1,22 @@
 package gm_map
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_entity"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
 type Map struct {
-	ground   *Ground
-	player   gm_entity.Player
-	entities []gm_entity.GameEntity
-	objs     []IMapObj
-	width    int
-	height   int
-	tileSize int
-	camera   *Camera
+	ground       *Ground
+	player       gm_entity.Player
+	entities     []gm_entity.GameEntity
+	objs         []IMapObj
+	width        int
+	height       int
+	tileSize     int
+	camera       *gm_camera.Camera
+	droppedItems []*gm_item.Item
 }
 
 type MapOpt struct {
@@ -46,14 +48,15 @@ func NewMap(opt MapOpt) (*Map, error) {
 	height, width = background.GetSizes()
 
 	return &Map{
-		ground:   NewGround(background),
-		width:    width,
-		height:   height,
-		player:   nil,
-		tileSize: opt.TileSize,
-		objs:     []IMapObj{},
-		entities: []gm_entity.GameEntity{},
-		camera:   nil,
+		ground:       NewGround(background),
+		width:        width,
+		height:       height,
+		player:       nil,
+		tileSize:     opt.TileSize,
+		objs:         []IMapObj{},
+		entities:     []gm_entity.GameEntity{},
+		droppedItems: []*gm_item.Item{},
+		camera:       nil,
 	}, nil
 }
 
@@ -70,7 +73,7 @@ func (m *Map) AddObj(obj IMapObj) {
 	m.objs = append(m.objs, obj)
 }
 
-func (m *Map) AddCamera(camera *Camera) {
+func (m *Map) AddCamera(camera *gm_camera.Camera) {
 	if camera == nil {
 		return
 	}
@@ -90,56 +93,4 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 	if level == MapGroundLevel {
 		m.ground.AddLayer(layer)
 	}
-}
-
-func (m *Map) MoveCamera(keys []ebiten.Key, area CameraArea) (bool, error) {
-	return m.camera.MovementHandler(keys, area)
-}
-
-func (m *Map) PlayerMayMove(keys []ebiten.Key) bool {
-	var (
-		playerMoveVectorX float64
-		playerMoveVectorY float64
-	)
-
-	playerMoveVectorX, playerMoveVectorY = m.player.GetMoveVector(keys)
-	for _, obj := range m.objs {
-		if obj.IntersectVector(m.player, playerMoveVectorX, playerMoveVectorY) {
-			return false
-		}
-	}
-	return true
-}
-
-func (m *Map) GetCameraArea(x, y float64) CameraArea {
-	return m.camera.GetPointArea(x, y)
-}
-
-func (m *Map) Draw(screen *ebiten.Image) {
-
-	var border gm_layer.LayerBorder = gm_layer.LayerBorder{
-		X:      m.camera.X,
-		Y:      m.camera.Y,
-		Width:  m.camera.Width,
-		Height: m.camera.Height,
-	}
-
-	m.ground.Draw(screen, border)
-
-	// for _, layer := range g.layers {
-	// 	layer.Draw(screen)
-	// }
-
-	for _, entity := range m.entities {
-		entity.Draw(screen)
-	}
-
-	for _, obj := range m.objs {
-		obj.Draw(screen, m.camera)
-	}
-
-	// ebitenutil.DebugPrint(screen, fmt.Sprintf("area %d\n", m.GetCameraArea(m.player.GetPosition())))
-	// relX, relY, inCamera := m.camera.GetRelativeCoords(m.player.GetPosition())
-	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("area %f %f %t \n", relX, relY, inCamera), 300, 0)
-	// ebitenutil.DebugPrintAt(screen, fmt.Sprintf("camera %f %f %f \n", m.camera.X, m.camera.Y, m.camera.limitX), 0, 30)
 }

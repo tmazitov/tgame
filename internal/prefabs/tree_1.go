@@ -2,8 +2,8 @@ package prefabs
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
-	"github.com/tmazitov/tgame.git/pkg/gm_map"
 )
 
 type Tree struct {
@@ -13,6 +13,7 @@ type Tree struct {
 	Height int
 	Image  *ebiten.Image
 	coll   *gm_geometry.Collider
+	shape  *gm_geometry.Rect
 }
 
 func NewTree(x, y float64, image *ebiten.Image) *Tree {
@@ -34,6 +35,7 @@ func NewTree(x, y float64, image *ebiten.Image) *Tree {
 		Height: 64,
 		Image:  image,
 		coll:   nil,
+		shape:  nil,
 	}
 
 	tree.coll = gm_geometry.NewCollider(&tree.X, &tree.Y, gm_geometry.ColliderOptions{
@@ -42,6 +44,7 @@ func NewTree(x, y float64, image *ebiten.Image) *Tree {
 		PaddingTop:  paddingTop,
 		PaddingLeft: paddingLeft,
 	})
+	tree.shape = gm_geometry.NewRect(&x, &y, width, height)
 	return tree
 }
 
@@ -49,7 +52,7 @@ func (t *Tree) GetCollider() *gm_geometry.Collider {
 	return t.coll
 }
 
-func (t *Tree) Draw(screen *ebiten.Image, camera *gm_map.Camera) {
+func (t *Tree) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 
 	var (
 		relativeX  float64
@@ -57,7 +60,7 @@ func (t *Tree) Draw(screen *ebiten.Image, camera *gm_map.Camera) {
 		isOnScreen bool
 	)
 
-	relativeX, relativeY, isOnScreen = camera.GetRelativeCoords(t.X, t.Y)
+	relativeX, relativeY, isOnScreen = camera.GetRelativeCoordsByRect(t.shape)
 	if !isOnScreen {
 		return
 	}
@@ -66,14 +69,10 @@ func (t *Tree) Draw(screen *ebiten.Image, camera *gm_map.Camera) {
 	screen.DrawImage(t.Image, op)
 }
 
-func (t *Tree) IntersectVector(obj gm_geometry.IMapIntersectable, x, y float64) bool {
-	var (
-		objCollider = obj.GetCollider()
-	)
+func (t *Tree) IntersectVector(obj gm_geometry.IRect, x, y float64) bool {
+	return t.coll.IsIntersectWithVector(obj, x, y)
+}
 
-	if objCollider == nil {
-		return false
-	}
-
-	return t.coll.IsIntersectWithVector(objCollider, x, y)
+func (t *Tree) Intersect(obj gm_geometry.IRect) bool {
+	return t.coll.IsIntersect(obj)
 }

@@ -18,3 +18,9 @@ const PlayerSize = 32
 // PROJECTILE SETTINGS
 
 const FireballSpeed = 2.5
+
+// ITEM SETTINGS
+
+const ItemSize = 32
+const ItemDropDistance = 25
+const ItemCollectionDistance = 15

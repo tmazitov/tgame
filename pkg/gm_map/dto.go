@@ -2,6 +2,7 @@ package gm_map
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 )
 
@@ -11,26 +12,14 @@ const (
 	MapGroundLevel MapLevel = 1
 )
 
-type CameraArea int
-
-const (
-	NoneCameraArea        CameraArea = 0
-	FreeCameraArea        CameraArea = 1
-	TopBorderCameraArea   CameraArea = 2
-	RightBorderCameraArea CameraArea = 3
-	LeftBorderCameraArea  CameraArea = 4
-	BotBorderCameraArea   CameraArea = 5
-
-	TopLeftCornerArea  CameraArea = 6
-	TopRightCornerArea CameraArea = 7
-	BotLeftCornerArea  CameraArea = 8
-	BotRightCornerArea CameraArea = 9
-)
-
 type IMapObj interface {
-	Draw(screen *ebiten.Image, camera *Camera)
+	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
 	GetCollider() *gm_geometry.Collider
-	IntersectVector(obj gm_geometry.IMapIntersectable, x, y float64) bool
+	Intersect(obj gm_geometry.IRect) bool
+	IntersectVector(obj gm_geometry.IRect, x, y float64) bool
 }
 
-const CameraBorderSize float64 = 64
+// type IDropedItem interface {
+// 	SetPosition(x, y float64)
+// 	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
+// }
