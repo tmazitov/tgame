@@ -2,6 +2,7 @@ package player
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/tmazitov/tgame.git/internal/items"
 	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
@@ -9,21 +10,24 @@ import (
 
 type PlayerInventory struct {
 	inventory       *gm_inventory.Inventory
+	weaponSlot      *gm_inventory.Slot
 	pressedKeyIndex int
 }
 
 func NewPlayerInventory(x, y float64, font *gm_font.Font) (*PlayerInventory, error) {
 
 	var (
-		inventory *gm_inventory.Inventory
-		err       error
+		inventory  *gm_inventory.Inventory
+		slotSize   float64 = 33
+		weaponSlot *gm_inventory.Slot
+		err        error
 	)
 
 	if inventory, err = gm_inventory.NewInventory(gm_inventory.InventoryOpt{
-		Height:        4,
+		Height:        3,
 		Width:         6,
 		SlotImagePath: "assets/textures/inventory_slot_3.png",
-		SlotSize:      33,
+		SlotSize:      int(slotSize),
 		X:             x,
 		Y:             y,
 		Font:          font,
@@ -31,8 +35,13 @@ func NewPlayerInventory(x, y float64, font *gm_font.Font) (*PlayerInventory, err
 		return nil, err
 	}
 
+	weaponSlot = inventory.AddSlot(x+slotSize*1.5, y-slotSize*2, &gm_inventory.SlotOptions{
+		ItemCollection: items.WeaponCollection,
+	})
+
 	return &PlayerInventory{
 		inventory:       inventory,
+		weaponSlot:      weaponSlot,
 		pressedKeyIndex: -1,
 	}, nil
 }
@@ -82,8 +91,4 @@ func (pi *PlayerInventory) Draw(screen *ebiten.Image) {
 
 func (pi *PlayerInventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 	return pi.inventory.PutItemToFreeSlot(item)
-}
-
-func (pi *PlayerInventory) PutItem(item *gm_item.Item, x, y uint) {
-	pi.inventory.PutItem(item, x, y)
 }

@@ -9,8 +9,8 @@ import (
 func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) *gm_item.Item {
 
 	var (
-		touchedSlot *Slot
-		item        *gm_item.Item
+		dropSlot *Slot
+		item     *gm_item.Item
 	)
 
 	// Find touch on slot
@@ -26,10 +26,10 @@ func (i *Inventory) HandleDragAndDrop(touches []ebiten.TouchID) *gm_item.Item {
 
 	// Check if touch is released
 	if i.replaceTouch.IsReleased() {
-		touchedSlot, _, _ = i.CheckTouchOnSlot(i.replaceTouch.Position())
-		if i.putItemIsPossible(i.replaceTouch.draggingItem, touchedSlot) {
-			i.putItem(i.replaceTouch, touchedSlot)
-		} else if !i.IsInventoryArea(i.replaceTouch.Position()) {
+		dropSlot, _, _ = i.CheckTouchOnSlot(i.replaceTouch.Position())
+		if dropSlot != nil && i.putItemIsPossible(i.replaceTouch.draggingItem, dropSlot) {
+			i.putItem(i.replaceTouch, dropSlot)
+		} else if dropSlot == nil {
 			item = i.replaceTouch.draggingItem
 			i.replaceTouch = nil
 			return item
@@ -122,6 +122,10 @@ func (i *Inventory) putItemIsPossible(item *gm_item.Item, destSlot *Slot) bool {
 		return false
 	}
 
+	if destSlot.ItemCollection != "" && item.Collection != destSlot.ItemCollection {
+		return false
+	}
+
 	if destSlot.IsFree() {
 		return true
 	}
@@ -138,11 +142,14 @@ func (i *Inventory) putItemIsPossible(item *gm_item.Item, destSlot *Slot) bool {
 	return item.Amount+destSlotItemAmount <= destSlotItemStackSize
 }
 
-func (i *Inventory) putItem(touch *Touch, destSlot *Slot) {
+func (i *Inventory) putItem(touch *Touch, destSlot *Slot) bool {
 	if destSlot.Item == nil {
-		destSlot.SetItem(touch.draggingItem)
-		touch.draggingItem.SetPosition(i.GetSlotPosition(destSlot))
+		if !destSlot.SetItem(touch.draggingItem) {
+			return false
+		}
+		touch.draggingItem.SetPosition(destSlot.GetPosition())
 	} else if destSlot.Item.GetID() == touch.draggingItem.GetID() {
 		destSlot.Item.SetAmount(destSlot.Item.GetAmount() + touch.draggingItem.GetAmount())
 	}
+	return true
 }

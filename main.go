@@ -82,6 +82,10 @@ func main() {
 	item.AutoDrop(30, 55)
 	m.AddDropItem(item)
 
+	item = game.ItemStorage.GetItem(items.WeaponCollection, items.IronSword).Clone(1)
+	item.AutoDrop(50, 70)
+	m.AddDropItem(item)
+
 	game.AddMap(m)
 	game.Run()
 }

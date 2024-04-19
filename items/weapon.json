@@ -1,0 +1,16 @@
+[
+	{
+		"id": 4,
+		"name": "Iron Sword",
+		"imagePath" : "assets/textures/sword-32x32.png",
+		"smallImagePath" : "assets/textures/dropped-sword-32x32.png",
+		"imageSize" : 32,
+		"smallImageSize" : 32,
+		"maxStack" : 1,
+		"description" : {
+			"height" : 24,
+			"width" : 74,
+			"textPadding" : 8
+		}
+	}
+]

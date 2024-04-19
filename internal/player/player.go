@@ -72,7 +72,7 @@ func NewPlayer(x, y float64, imagesPaths PlayerImagesPaths, font *gm_font.Font) 
 		return nil, err
 	}
 
-	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 30, font); err != nil {
+	if pl.inventory, err = NewPlayerInventory(stgs.ScreenWidth-226, 100, font); err != nil {
 		return nil, err
 	}
 

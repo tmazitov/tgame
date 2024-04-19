@@ -18,7 +18,7 @@ type InventoryOpt struct {
 }
 
 type Inventory struct {
-	slots        [][]*Slot
+	slots        []*Slot
 	Height       int
 	Width        int
 	IsVisible    bool
@@ -50,8 +50,10 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 	}
 
 	var (
-		slots [][]*Slot = [][]*Slot{}
+		slots []*Slot = []*Slot{}
 		image *gm_layer.Image
+		slotX float64
+		slotY float64
 		err   error
 	)
 
@@ -59,10 +61,11 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 		return nil, err
 	}
 
-	for i := 0; i < opt.Height; i++ {
-		slots = append(slots, []*Slot{})
-		for j := 0; j < opt.Width; j++ {
-			slots[i] = append(slots[i], NewSlot(image))
+	for row := 0; row < opt.Height; row++ {
+		for column := 0; column < opt.Width; column++ {
+			slotX = opt.X + float64(column*opt.SlotSize)
+			slotY = opt.Y + float64(row*opt.SlotSize)
+			slots = append(slots, NewSlot(slotX, slotY, image, nil))
 		}
 	}
 
@@ -80,35 +83,33 @@ func NewInventory(opt InventoryOpt) (*Inventory, error) {
 	}, nil
 }
 
-func (i *Inventory) findFreeSlot() *Slot {
-
-	for y := 0; y < i.Height; y++ {
-		for x := 0; x < i.Width; x++ {
-			if i.slots[y][x].IsFree() {
-				return i.slots[y][x]
-			}
+func (i *Inventory) findFreeSlot(item *gm_item.Item) *Slot {
+	for _, slot := range i.slots {
+		if slot.IsFree() && slot.ItemCollection == "" {
+			return slot
+		} else if slot.IsFree() && slot.ItemCollection == item.Collection {
+			return slot
 		}
 	}
 	return nil
 }
 
-func (i *Inventory) findSlotWithSameItem(id uint) *Slot {
+func (i *Inventory) findSlotWithSameItem(item *gm_item.Item) *Slot {
 
 	var (
 		slotItem *gm_item.Item
 	)
 
-	for y := 0; y < i.Height; y++ {
-		for x := 0; x < i.Width; x++ {
-			if i.slots[y][x].IsFree() {
-				continue
-			}
-			slotItem = i.slots[y][x].Item
-			if slotItem.ID == id && slotItem.Amount < slotItem.MaxStackSize {
-				return i.slots[y][x]
-			}
+	for _, slot := range i.slots {
+		if slot.IsFree() {
+			continue
+		}
+		slotItem = slot.Item
+		if slotItem.ID == item.ID && slotItem.Amount < slotItem.MaxStackSize {
+			return slot
 		}
 	}
+
 	return nil
 }
 
@@ -116,7 +117,7 @@ func (i *Inventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 
 	var freeSlot *Slot
 
-	freeSlot = i.findSlotWithSameItem(item.ID)
+	freeSlot = i.findSlotWithSameItem(item)
 
 	if freeSlot != nil {
 		if freeSlot.Item.Amount+item.Amount <= freeSlot.Item.MaxStackSize {
@@ -129,7 +130,7 @@ func (i *Inventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 		}
 	}
 
-	if freeSlot = i.findFreeSlot(); freeSlot == nil {
+	if freeSlot = i.findFreeSlot(item); freeSlot == nil {
 		return false
 	}
 
@@ -138,19 +139,8 @@ func (i *Inventory) PutItemToFreeSlot(item *gm_item.Item) bool {
 	return true
 }
 
-func (i *Inventory) PutItem(item *gm_item.Item, x, y uint) bool {
-	if !i.slots[y][x].IsFree() {
-		return false
-	}
-	item.IsDropped = false
-	i.slots[y][x].SetItem(item)
-
-	return true
-}
-
 func (i *Inventory) CheckTouchOnSlot(cursorX, cursorY int) (*Slot, float64, float64) {
 	var (
-		slot           *Slot
 		slotX          float64
 		slotY          float64
 		slotSize       float64
@@ -160,57 +150,23 @@ func (i *Inventory) CheckTouchOnSlot(cursorX, cursorY int) (*Slot, float64, floa
 	slotSize = float64(i.slotSize)
 	touchX = float64(cursorX)
 	touchY = float64(cursorY)
-	for row := 0; row < i.Height; row++ {
-		for column := 0; column < i.Width; column++ {
-			slot = i.slots[row][column]
-			slotX = i.x + float64(column*i.slotSize)
-			slotY = i.y + float64(row*i.slotSize)
-			if touchX >= slotX && touchX <= slotX+slotSize &&
-				touchY >= slotY && touchY <= slotY+slotSize {
-				return slot, touchX - slotX, touchY - slotY
-			}
+
+	for _, slot := range i.slots {
+		slotX, slotY = slot.GetPosition()
+		if touchX >= slotX && touchX <= slotX+slotSize &&
+			touchY >= slotY && touchY <= slotY+slotSize {
+			return slot, touchX - slotX, touchY - slotY
 		}
 	}
+
 	return nil, 0, 0
-}
-
-func (i *Inventory) GetSlotPosition(slot *Slot) (float64, float64) {
-
-	var (
-		s     *Slot
-		slotX float64
-		slotY float64
-	)
-
-	for row := 0; row < i.Height; row++ {
-		for column := 0; column < i.Width; column++ {
-			s = i.slots[row][column]
-			slotX = i.x + float64(column*i.slotSize)
-			slotY = i.y + float64(row*i.slotSize)
-			if s == slot {
-				return slotX, slotY
-			}
-		}
-	}
-	return 0, 0
 }
 
 func (i *Inventory) Draw(screen *ebiten.Image) {
 
-	var (
-		slot  *Slot
-		slotX float64
-		slotY float64
-	)
-
 	// Draw all slots with inside items
-	for row := 0; row < i.Height; row++ {
-		for column := 0; column < i.Width; column++ {
-			slot = i.slots[row][column]
-			slotX = i.x + float64(column*i.slotSize)
-			slotY = i.y + float64(row*i.slotSize)
-			slot.Draw(slotX, slotY, i.font, screen)
-		}
+	for _, slot := range i.slots {
+		slot.Draw(i.font, screen)
 	}
 
 	// Draw dragging item
@@ -222,4 +178,10 @@ func (i *Inventory) Draw(screen *ebiten.Image) {
 	if i.replaceTouch == nil && i.hoveredSlot != nil && i.hoveredSlot.Item != nil {
 		i.hoveredSlot.Item.DrawDescription(screen)
 	}
+}
+
+func (i *Inventory) AddSlot(x, y float64, opt *SlotOptions) *Slot {
+	var slot *Slot = NewSlot(x, y, i.slotImage, opt)
+	i.slots = append(i.slots, slot)
+	return slot
 }

@@ -14,6 +14,7 @@ type Item struct {
 	Name         string
 	MaxStackSize uint
 	Amount       uint
+	Collection   string
 	image        *gm_layer.Image
 	smallImage   *gm_layer.Image
 	description  *ItemDescription
@@ -33,6 +34,7 @@ type ItemOptions struct {
 	SmallImageSize int
 	MaxStackSize   uint
 	Amount         uint
+	Collection     string
 	X              float64
 	Y              float64
 }
@@ -67,6 +69,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		ID:           id,
 		Name:         name,
 		MaxStackSize: opt.MaxStackSize,
+		Collection:   opt.Collection,
 		image:        image,
 		smallImage:   smallImage,
 		X:            opt.X,
@@ -111,6 +114,7 @@ func (i *Item) Clone(amount uint) *Item {
 		IsDropped:    i.IsDropped,
 		description:  i.description,
 		lastDropTime: i.lastDropTime,
+		Collection:   i.Collection,
 	}
 
 	item.shape = gm_geometry.NewRect(&item.X, &item.Y, item.smallImage.Width(), item.smallImage.Height())

@@ -1,6 +1,8 @@
 package gm_item
 
 import (
+	"fmt"
+
 	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
@@ -22,13 +24,14 @@ type ItemDescriptionRaw struct {
 	TextPadding int `json:"textPadding"`
 }
 
-func (ir *ItemRaw) ToItem(font *gm_font.Font, descriptionSourceImage *gm_layer.Image) (*Item, error) {
+func (ir *ItemRaw) ToItem(font *gm_font.Font, collection string, descriptionSourceImage *gm_layer.Image) (*Item, error) {
 
 	var (
 		item *Item
 		err  error
 	)
 
+	fmt.Printf("collection name: %s\n", collection)
 	item, err = NewItem(ir.Id, ir.Name, ItemOptions{
 		MaxStackSize:   ir.MaxStack,
 		Amount:         1,
@@ -36,6 +39,7 @@ func (ir *ItemRaw) ToItem(font *gm_font.Font, descriptionSourceImage *gm_layer.I
 		ImagePath:      ir.ImagePath,
 		SmallImagePath: ir.SmallImagePath,
 		SmallImageSize: ir.SmallImageSize,
+		Collection:     collection,
 	})
 
 	if err != nil {

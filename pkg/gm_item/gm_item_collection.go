@@ -83,7 +83,7 @@ func (c *ItemCollection) FillByJson(path string) error {
 	}
 
 	for _, itemRaw := range itemsRaw {
-		item, err = itemRaw.ToItem(c.font, c.descriptionSource)
+		item, err = itemRaw.ToItem(c.font, c.Name, c.descriptionSource)
 		if err != nil {
 			return err
 		}

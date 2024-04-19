@@ -8,5 +8,10 @@
 		"name" : "food",
 		"itemsPath" : "items/food.json",
 		"descriptionSourcePath" : "assets/textures/description_8.png"
+	},
+	{
+		"name" : "weapon",
+		"itemsPath" : "items/weapon.json",
+		"descriptionSourcePath" : "assets/textures/description_8.png"
 	}
 ]
