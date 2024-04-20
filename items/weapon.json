@@ -11,6 +11,13 @@
 			"height" : 24,
 			"width" : 74,
 			"textPadding" : 8
+		},
+		"usage" : {
+			"attack" : {
+				"minDamage" : 5,
+				"maxDamage" : 8,
+				"coolDown" : 1.4			
+			}
 		}
 	}
 ]

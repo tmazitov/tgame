@@ -46,6 +46,13 @@ func NewPlayerInventory(x, y float64, font *gm_font.Font) (*PlayerInventory, err
 	}, nil
 }
 
+func (pi *PlayerInventory) GetWeapon() *gm_item.Item {
+	if pi.weaponSlot.IsFree() {
+		return nil
+	}
+	return pi.weaponSlot.Item
+}
+
 func (pi *PlayerInventory) HandleToggle(keys []ebiten.Key) {
 	var (
 		toggleKeyIndex int = -1

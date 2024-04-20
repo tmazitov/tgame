@@ -25,6 +25,12 @@ type Item struct {
 	shape        *gm_geometry.Rect
 	lastDropTime time.Time
 	dropProcess  *ItemDropPath
+	Usage        *ItemUsage
+}
+
+type ItemUsage struct {
+	Attack *AttackUsage
+	Eating *EatingUsage
 }
 
 type ItemOptions struct {
@@ -37,6 +43,7 @@ type ItemOptions struct {
 	Collection     string
 	X              float64
 	Y              float64
+	Usage          *ItemUsage
 }
 
 func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
@@ -45,6 +52,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		shape      *gm_geometry.Rect
 		image      *gm_layer.Image
 		smallImage *gm_layer.Image
+		usage      *ItemUsage
 		err        error
 	)
 
@@ -65,6 +73,16 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 
 	shape = gm_geometry.NewRect(&opt.X, &opt.Y, smallImage.Width(), smallImage.Height())
 
+	if opt.Usage == nil {
+		usage = &ItemUsage{
+			Attack: &AttackUsage{MinDamage: 1, MaxDamage: 1, CoolDown: 1},
+			Eating: nil,
+		}
+	} else if opt.Usage.Attack == nil {
+		opt.Usage.Attack = &AttackUsage{MinDamage: 1, MaxDamage: 1, CoolDown: 1}
+		usage = opt.Usage
+	}
+
 	return &Item{
 		ID:           id,
 		Name:         name,
@@ -80,6 +98,7 @@ func NewItem(id uint, name string, opt ItemOptions) (*Item, error) {
 		description:  nil,
 		shape:        shape,
 		lastDropTime: time.Time{},
+		Usage:        usage,
 	}, nil
 }
 
@@ -230,4 +249,12 @@ func (i *Item) Size() int {
 		return i.smallImage.Height()
 	}
 	return i.image.Height()
+}
+
+func (i *Item) GetImage() *gm_layer.Image {
+	return i.image
+}
+
+func (i *Item) GetSmallImage() *gm_layer.Image {
+	return i.smallImage
 }

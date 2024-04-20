@@ -7,6 +7,11 @@ import (
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 )
 
+type ItemUsageRaw struct {
+	Attack *AttackUsage `json:"attack"`
+	Eating *EatingUsage `json:"eating"`
+}
+
 type ItemRaw struct {
 	Id             uint               `json:"id"`
 	Name           string             `json:"name"`
@@ -16,6 +21,7 @@ type ItemRaw struct {
 	SmallImageSize int                `json:"smallImageSize"`
 	MaxStack       uint               `json:"maxStack"`
 	Description    ItemDescriptionRaw `json:"description"`
+	Usage          ItemUsageRaw       `json:"usage"`
 }
 
 type ItemDescriptionRaw struct {

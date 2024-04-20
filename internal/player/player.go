@@ -10,6 +10,7 @@ import (
 	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_inventory"
+	"github.com/tmazitov/tgame.git/pkg/gm_item"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -234,14 +235,40 @@ func (p *Player) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 		tile = FlipVertical(tile)
 	}
 
+	if p.actionState == Top_PlayerAction || p.lastAction == Top_PlayerAction {
+		p.drawWeapon(screen, relativeX, relativeY)
+	}
 	screen.DrawImage(tile, op)
+	if p.actionState != Top_PlayerAction && p.lastAction != Top_PlayerAction {
+		p.drawWeapon(screen, relativeX, relativeY)
+	}
 	p.drawShadow(screen, relativeX, relativeY)
 
-	for _, fireball := range p.attack.GetFireballs() {
-		fireball.Move()
-		fireball.Draw(screen)
-	}
 	p.inventory.Draw(screen)
+}
+
+func (p *Player) drawWeapon(screen *ebiten.Image, relativeX, relativeY float64) {
+
+	var (
+		weapon      *gm_item.Item = p.inventory.GetWeapon()
+		weaponImage *gm_layer.Image
+		weaponTile  *ebiten.Image
+	)
+
+	if weapon == nil {
+		return
+	}
+
+	weaponImage = weapon.GetImage()
+	op := &ebiten.DrawImageOptions{}
+	if p.actionState == Left_PlayerAction || p.lastAction == Left_PlayerAction {
+		weaponTile = FlipVertical(weaponImage.Inst)
+		op.GeoM.Translate(relativeX-12, relativeY-6)
+	} else {
+		weaponTile = weaponImage.Inst
+		op.GeoM.Translate(relativeX+12, relativeY-6)
+	}
+	screen.DrawImage(weaponTile, op)
 }
 
 func (p *Player) StaffHandler(keys []ebiten.Key) {
