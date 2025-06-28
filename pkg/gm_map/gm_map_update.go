@@ -32,16 +32,44 @@ func (m *Map) playerMayMove(keys []ebiten.Key) bool {
 	var (
 		playerMoveVectorX float64
 		playerMoveVectorY float64
+		playerCollider    *gm_geometry.Collider = m.player.GetCollider()
 	)
 
 	playerMoveVectorX, playerMoveVectorY = m.player.GetMoveVector(keys)
 	for _, obj := range m.objs {
-		if obj.IntersectVector(m.player.GetCollider(), playerMoveVectorX, playerMoveVectorY) {
+		if obj.IntersectVector(playerCollider, playerMoveVectorX, playerMoveVectorY) {
+			return false
+		}
+	}
+	for _, entity := range m.entities {
+		if entity == m.player {
+			continue
+		}
+
+		if entity.IntersectVector(playerCollider, playerMoveVectorX, playerMoveVectorY) {
 			return false
 		}
 	}
 	return true
 }
+
+// func (m *Map) entityMayMove(entity gm_entity.GameEntity, vectorX, vectorY float64) bool {
+// 	for _, obj := range m.objs {
+// 		if obj.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
+// 			return false
+// 		}
+// 	}
+// 	for _, entity := range m.entities {
+// 		if entity == m.player {
+// 			continue
+// 		}
+
+// 		if entity.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
+// 			return false
+// 		}
+// 	}
+// 	return true
+// }
 
 func (m *Map) handlePlayerMove(keys []ebiten.Key) error {
 

@@ -1,6 +1,7 @@
 package enemy
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/tmazitov/tgame.git/internal/enemy/behavior"
@@ -68,5 +69,11 @@ func NewEnemy(x, y float64, imagesPaths EnemyImagesPaths) (*Enemy, error) {
 		PaddingLeft: 8,
 	})
 
+	fmt.Printf("collider %v %v\n", *en.coll.X, *en.coll.Y)
+
 	return en, nil
+}
+
+func (e *Enemy) GetCollider() *gm_geometry.Collider {
+	return e.coll
 }

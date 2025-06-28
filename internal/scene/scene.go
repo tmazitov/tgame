@@ -90,7 +90,7 @@ func (s *Scene) Load() error {
 		Shadow: "assets/textures/characters/shadow.png",
 	})
 	if err != nil {
-
+		return err
 	}
 	s.enemies.Add(e)
 

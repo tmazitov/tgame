@@ -251,3 +251,7 @@ func (p *Player) StaffHandler(keys []ebiten.Key) {
 func (p *Player) GetShape() gm_geometry.IRect {
 	return p.coll
 }
+
+func (p *Player) IntersectVector(obj gm_geometry.IRect, x, y float64) bool {
+	return p.coll.IsIntersectWithVector(obj, x, y)
+}

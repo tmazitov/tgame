@@ -10,6 +10,8 @@ import (
 
 type GameEntity interface {
 	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
+	IntersectVector(obj gm_geometry.IRect, x, y float64) bool
+	GetCollider() *gm_geometry.Collider
 }
 
 type Player interface {
@@ -22,7 +24,6 @@ type Player interface {
 	CollectItemsHandler(items []*gm_item.Item, camera *gm_camera.Camera) []*gm_item.Item
 	GetSpeed() *float64
 	GetMoveVector(keys []ebiten.Key) (float64, float64)
-	GetCollider() *gm_geometry.Collider
 	GetPosition() (float64, float64)
 	GetInventory() *gm_inventory.Inventory
 	GetMoveSidePosition() (float64, float64)
