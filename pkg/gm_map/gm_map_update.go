@@ -3,6 +3,7 @@ package gm_map
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
+	"github.com/tmazitov/tgame.git/pkg/gm_entity"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
 )
@@ -23,6 +24,10 @@ func (m *Map) Update(touches []ebiten.TouchID, keys []ebiten.Key) error {
 
 	for _, item := range m.droppedItems {
 		item.Update()
+	}
+
+	for _, entity := range m.entities {
+		entity.Update()
 	}
 
 	return nil
@@ -53,23 +58,23 @@ func (m *Map) playerMayMove(keys []ebiten.Key) bool {
 	return true
 }
 
-// func (m *Map) entityMayMove(entity gm_entity.GameEntity, vectorX, vectorY float64) bool {
-// 	for _, obj := range m.objs {
-// 		if obj.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
-// 			return false
-// 		}
-// 	}
-// 	for _, entity := range m.entities {
-// 		if entity == m.player {
-// 			continue
-// 		}
+func (m *Map) EntityMayMove(entity gm_entity.GameEntity, vectorX, vectorY float64) bool {
+	for _, obj := range m.objs {
+		if obj.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
+			return false
+		}
+	}
+	for _, e := range m.entities {
+		if entity == e {
+			continue
+		}
 
-// 		if entity.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
+		if e.IntersectVector(entity.GetCollider(), vectorX, vectorY) {
+			return false
+		}
+	}
+	return true
+}
 
 func (m *Map) handlePlayerMove(keys []ebiten.Key) error {
 

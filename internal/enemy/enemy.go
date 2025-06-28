@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tmazitov/tgame.git/internal/enemy/behavior"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	"github.com/tmazitov/tgame.git/pkg/gm_layer"
 	stgs "github.com/tmazitov/tgame.git/settings"
@@ -21,8 +20,10 @@ type Enemy struct {
 	Speed       float64
 	images      *EnemyImages
 	anime       *EnemyAnime
-	actionState behavior.EnemyAction
+	actionState EnemyAction
+	lastAction  EnemyAction
 	coll        *gm_geometry.Collider
+	behavior    IEnemyBehavior
 }
 
 type EnemyImagesPaths struct {
@@ -44,8 +45,9 @@ func NewEnemy(x, y float64, imagesPaths EnemyImagesPaths) (*Enemy, error) {
 		Speed:       stgs.EnemySpeed,
 		images:      &EnemyImages{},
 		anime:       enemyAnime,
-		actionState: behavior.EnemyStay,
+		actionState: Idle_EnemyAction,
 		coll:        nil,
+		behavior:    nil,
 	}
 
 	if en.images.Tiles, err = gm_layer.NewImageByPath(imagesPaths.Tiles, stgs.TileSize); err != nil {
@@ -74,6 +76,21 @@ func NewEnemy(x, y float64, imagesPaths EnemyImagesPaths) (*Enemy, error) {
 	return en, nil
 }
 
+func (e *Enemy) Update() {
+	e.move()
+}
+
 func (e *Enemy) GetCollider() *gm_geometry.Collider {
 	return e.coll
+}
+
+func (e *Enemy) SetBehavior(behavior IEnemyBehavior) {
+	e.behavior = behavior
+}
+
+func (e *Enemy) GetPosition() (float64, float64) {
+	return e.X, e.Y
+}
+func (e *Enemy) GetSpeed() float64 {
+	return e.Speed
 }

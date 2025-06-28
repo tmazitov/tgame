@@ -106,6 +106,10 @@ func (p *Player) GetInventory() *gm_inventory.Inventory {
 	return p.inventory.inventory
 }
 
+func (p *Player) Update() {
+
+}
+
 func (p *Player) GetMoveVector(keys []ebiten.Key) (float64, float64) {
 
 	var (
@@ -193,13 +197,29 @@ func (p *Player) GetMoveSidePosition() (float64, float64) {
 		return p.X, p.Y
 	}
 	if (p.actionState == Right_PlayerAction) || (p.lastAction == Right_PlayerAction) {
-		return p.X + stgs.PlayerSize, p.Y
+		return p.X, p.Y
 	}
 	if (p.actionState == Top_PlayerAction) || (p.lastAction == Top_PlayerAction) {
 		return p.X, p.Y
 	}
 	if (p.actionState == Bot_PlayerAction) || (p.lastAction == Bot_PlayerAction) {
+		return p.X, p.Y
+	}
+	return p.X, p.Y
+}
+
+func (p *Player) GetOppositeMoveSidePosition() (float64, float64) {
+	if (p.actionState == Left_PlayerAction) || (p.lastAction == Left_PlayerAction) {
+		return p.X + stgs.PlayerSize, p.Y
+	}
+	if (p.actionState == Right_PlayerAction) || (p.lastAction == Right_PlayerAction) {
+		return p.X, p.Y
+	}
+	if (p.actionState == Top_PlayerAction) || (p.lastAction == Top_PlayerAction) {
 		return p.X, p.Y + stgs.PlayerSize
+	}
+	if (p.actionState == Bot_PlayerAction) || (p.lastAction == Bot_PlayerAction) {
+		return p.X, p.Y
 	}
 	return p.X, p.Y
 }

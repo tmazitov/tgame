@@ -17,7 +17,7 @@ const PlayerSize = 32
 
 // ENEMY SETTINGS
 
-const EnemySpeed = 2.5
+const EnemySpeed = 2
 
 // PROJECTILE SETTINGS
 

@@ -1,10 +1,10 @@
 package scene
 
 import (
-	"github.com/tmazitov/tgame.git/internal/enemy"
 	"github.com/tmazitov/tgame.git/internal/items"
 	"github.com/tmazitov/tgame.git/internal/maps"
 	"github.com/tmazitov/tgame.git/internal/player"
+	"github.com/tmazitov/tgame.git/internal/prefabs/robber"
 	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_font"
 	"github.com/tmazitov/tgame.git/pkg/gm_item"
@@ -85,14 +85,11 @@ func (s *Scene) Load() error {
 
 	s.game.AddMap(s.location)
 
-	e, err := enemy.NewEnemy(50, 50, enemy.EnemyImagesPaths{
-		Tiles:  "assets/textures/characters/Humans_Thief.png",
-		Shadow: "assets/textures/characters/shadow.png",
-	})
+	robber, err := robber.NewRobber(50, 50, s.location)
 	if err != nil {
 		return err
 	}
-	s.enemies.Add(e)
+	s.enemies.Add(robber)
 
 	for _, enemyItem := range s.enemies.Get() {
 		s.location.AddEntity(enemyItem)

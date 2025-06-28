@@ -12,6 +12,7 @@ type GameEntity interface {
 	Draw(screen *ebiten.Image, camera *gm_camera.Camera)
 	IntersectVector(obj gm_geometry.IRect, x, y float64) bool
 	GetCollider() *gm_geometry.Collider
+	Update()
 }
 
 type Player interface {
@@ -27,5 +28,6 @@ type Player interface {
 	GetPosition() (float64, float64)
 	GetInventory() *gm_inventory.Inventory
 	GetMoveSidePosition() (float64, float64)
+	GetOppositeMoveSidePosition() (float64, float64)
 	GetShape() gm_geometry.IRect
 }

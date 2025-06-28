@@ -98,3 +98,7 @@ func (m *Map) AddLayer(level MapLevel, layer *gm_layer.Layer) {
 func (m *Map) AddEntity(entity gm_entity.GameEntity) {
 	m.entities = append(m.entities, entity)
 }
+
+func (m *Map) GetPlayer() gm_entity.Player {
+	return m.player
+}
