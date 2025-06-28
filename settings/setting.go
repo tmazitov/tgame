@@ -15,6 +15,10 @@ const TileYCount = ScreenHeight/TileSize + 1
 const PlayerSpeed = 2.5
 const PlayerSize = 32
 
+// ENEMY SETTINGS
+
+const EnemySpeed = 2.5
+
 // PROJECTILE SETTINGS
 
 const FireballSpeed = 2.5

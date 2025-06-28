@@ -23,7 +23,7 @@ func NewTree(x, y float64, image *ebiten.Image) *Tree {
 		height      int     = 64
 		collWidth   float64 = 16
 		collHeight  float64 = 4
-		paddingTop  float64 = float64(height) - 22
+		paddingTop  float64 = float64(height) - 10
 		paddingLeft float64 = float64(width)/2 - collWidth/2
 		tree        *Tree
 	)

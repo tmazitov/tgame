@@ -239,7 +239,7 @@ func (p *Player) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
 
 	for _, fireball := range p.attack.GetFireballs() {
 		fireball.Move()
-		fireball.Draw(screen)
+		fireball.Draw(screen, camera)
 	}
 	p.inventory.Draw(screen)
 }

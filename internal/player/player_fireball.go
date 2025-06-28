@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/tmazitov/tgame.git/pkg/gm_camera"
 	"github.com/tmazitov/tgame.git/pkg/gm_geometry"
 	stgs "github.com/tmazitov/tgame.git/settings"
 )
@@ -42,7 +43,8 @@ func (pf *PlayerFireball) Move() {
 	}
 }
 
-func (pf *PlayerFireball) Draw(screen *ebiten.Image) {
+func (pf *PlayerFireball) Draw(screen *ebiten.Image, camera *gm_camera.Camera) {
+
 	if pf.tileIterator == 8 {
 		pf.tileCounter++
 		pf.tileIterator = 0
@@ -52,8 +54,10 @@ func (pf *PlayerFireball) Draw(screen *ebiten.Image) {
 	}
 	pf.tileIterator++
 
+	relativeX, relativeY, _ := camera.GetRelativeCoords(pf.X, pf.Y)
+
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(pf.X), float64(pf.Y))
+	op.GeoM.Translate(relativeX, relativeY)
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("Fireball: %f %f\n", pf.X, pf.Y))
 	screen.DrawImage(pf.images[pf.tileCounter], op)
 }
